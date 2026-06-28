@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +28,7 @@
         }
         @keyframes slideIn{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
         @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+        /* 其余样式保持不变 */
         .shake{animation:shake 0.3s ease}
         .flash{animation:flash 0.2s ease}
         @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
@@ -613,7 +614,6 @@ function executeEvent(ev){
   if(ev.onUse)ev.onUse();
   if(S.location==='classroom'&&ev.id==='study'&&!S.hiddenEventFound&&S.day%5===0){S.hiddenEventStep++;if(S.hiddenEventStep===1) addLog('📄 你在课本里发现了一张旧纸条...');else if(S.hiddenEventStep===2) addLog('📄 纸条背面写着半个日期...');else if(S.hiddenEventStep===3){S.hiddenEventFound=true;S.skillPoint+=3;addLog('🔍 你拼凑出了隐藏的真相！+3SP');}}
   document.getElementById('storyText').textContent=ev.desc;
-  document.getElementById('storyFlavor').textContent=ev.flavor||'';
   if(ev.eff.log)addLog((S.streak>=2?'🔥 ':'')+ev.eff.log,found?'warn':'');
   if(S.spread>=100){const spreadDmg=60;S.bossHp=Math.max(0,S.bossHp-spreadDmg);S.totalDmg+=spreadDmg;S.spread=0;grantExp(spreadDmg);addLog('📢 恶行传遍全校！HP-60','card');}
   if(S.buffs.musicStun){S.buffs.musicStun=false}
@@ -627,11 +627,8 @@ function executeEvent(ev){
 }
 function useZSY(){if(S.ap<2||S.gameOver||!S.cards.zsy)return;S.ap-=2;if(Math.random()<0.5){document.getElementById('storyText').textContent='你正准备大吼召唤校长...';document.getElementById('storyFlavor').textContent=cardDefs.zsy.failFlavor;addLog(cardDefs.zsy.failLog,'warn');streakCheck(false);}else{const d=S.streak>=2?Math.floor(cardDefs.zsy.dmg*1.5):cardDefs.zsy.dmg;S.bossHp=Math.max(0,S.bossHp-d);S.totalDmg+=d;S.cards.zsy=false;S.cardUses++;grantExp(d);document.getElementById('storyText').textContent='你大吼一声！校长和德育处赶到！';document.getElementById('storyFlavor').textContent=cardDefs.zsy.flavor;addLog(`⚖️ ZSY：造成${d}伤害`,'card');streakCheck(true);}advanceTime();updateUI();}
 function useCard(key){if(!S.cards[key]||S.gameOver)return;const d=cardDefs[key];const dmg=S.streak>=2?Math.floor(d.dmg*1.5):d.dmg;S.bossHp=Math.max(0,S.bossHp-dmg);S.totalDmg+=dmg;S.cards[key]=false;S.cardUses++;grantExp(dmg);document.getElementById('storyText').textContent=`使用变身卡：${d.full}！`;document.getElementById('storyFlavor').textContent=d.flavor;addLog(d.log.replace(/\d+/,(m)=>dmg),'card');if(d.onUse)d.onUse();streakCheck(true);updateUI();}
-// 组合技伤害改为200
 function useCombo(type){const combos={'zsy+dzz':{dmg:200,log:'💥 ZSY+DZZ组合技！200伤害！',flavor:'政治法律+物理攻击！校长德育处到场！',consume:['zsy','dzz'],flag:'comboUsed'},'zsy+cqy':{dmg:150,log:'📋 ZSY+CQY法政双打！150伤害！',flavor:'法律+行政联合打击！',consume:['zsy','cqy'],flag:'_comboZsyCqy'},'xqs+cqy':{dmg:125,log:'📢 XQS+CQY舆论风暴！125伤害！',flavor:'嘴炮+管理层联合！传播满100%',consume:['xqs','cqy'],flag:'_comboXqsCqy',extra:()=>{S.spread=100}},'xqs+dzz':{dmg:140,log:'💪 XQS+DZZ嘴炮物理！140伤害！',flavor:'嘴炮+物理连击！滚木下回合无法行动',consume:['xqs','dzz'],flag:'_comboXqsDzz',extra:()=>{S.buffs.musicStun=true}}};const c=combos[type];if(!c||S[c.flag])return;const dmg=S.streak>=2?Math.floor(c.dmg*1.5):c.dmg;S.bossHp=Math.max(0,S.bossHp-dmg);S.totalDmg+=dmg;S.cardUses++;c.consume.forEach(k=>S.cards[k]=false);S[c.flag]=true;grantExp(dmg);document.getElementById('storyText').textContent='💥 组合技发动！';document.getElementById('storyFlavor').textContent=c.flavor;addLog(c.log.replace(/\d+/,(m)=>dmg),'card');if(c.extra)c.extra();if(type==='zsy+dzz')S.angryPeople=0;streakCheck(true);updateUI();}
-// continueAttack - 新增死亡判定
 function continueAttack(){if(S.ap<2||S.gameOver||!S.isAttacking)return;S.ap-=2;S.attackProgress+=25;addLog(`⚔️ 反抗进度+25%（${S.attackProgress}%）`);if(S.attackProgress>=100){S.isAttacking=false;S.attackProgress=0;const dmg=Math.floor(Math.random()*16)+15;S.bossHp=Math.max(0,S.bossHp-dmg);S.totalDmg+=dmg;grantExp(dmg);addLog(`⚔️ 反抗完成！-${dmg}HP`,'dmg');const cdmg=Math.floor(Math.random()*21)+25;const fc=S.dzzHpHalved?Math.floor(cdmg*1.5):cdmg;S.playerHp=Math.max(0,S.playerHp-fc);S.totalTaken+=fc;S.affection+=20;updateBossMaxHp();addLog(`💥 滚木打断反抗！-${fc}HP`,'dmg');streakCheck(false);
-    // 新增：死亡判定
     if(S.playerHp<=0 && !S.gameOver){S.gameOver=true;S.victory=false;showOverlay('💀 你被击败...','','lose');addLog('💀 游戏结束');updateUI();}}else{if(Math.random()<0.4)bossCounter();streakCheck(true);}checkHpThresholds();advanceTime();updateUI();}
 function moveTo(lk){if(S.ap<1||S.gameOver)return;if(S.blockedLocations.includes(lk)){addLog('🚫 该地点已被封锁！','warn');return;}S.ap-=(S.course==='体育课'?0:1);S.location=lk;document.getElementById('storyText').textContent=`你来到了${locations[lk].name}。`;addLog(`移动到${locations[lk].name}`);if(lk==='hallway'&&S.targeted&&Math.random()<0.25){addLog('🚪 走廊被围追堵截！','warn');bossCounter();streakCheck(false)}else streakCheck(true);musicComboCheck();checkHpThresholds();checkItemDrop();advanceTime();updateUI();}
 function advanceTime(){if(S.weatherDay>0){S.weatherDay--;if(S.weatherDay<=0)S.weather='晴天'}const used=S.maxAp-S.ap;const nt=Math.min(2,Math.floor(used/2));if(nt>S.timeIndex){S.timeIndex=nt;addLog(`⏰ ${S.timeNames[S.timeIndex]}`)}if(S.timeIndex>=2&&!S.gameOver)setTimeout(()=>{if(!S.gameOver&&S.timeIndex>=2)endDay()},400);}
@@ -645,13 +642,13 @@ function endDay(){
   if(S.day > 15 && S.affection < -20) S.npcStance.teacher = 'hostile';if(S.spread > 50) S.npcStance.students = 'supportive';
   S.isAttacking=false;S.attackProgress=0;S.streak=0;S.musicCombo=0;S.buffs={};const sp=getSpecialDay(S.day);if(sp){sp.eff();addLog(`📅 ${sp.name}：${sp.desc}`,'card')}if(S.day%4===0)randomEvent();if(S.playerHp<50&&S.day>10)S.bossHp=Math.max(0,S.bossHp-20);
   S.day++;S.ap=S.maxAp;S.timeIndex=0;S.course=courses[S.day%7]?courses[S.day%7][0]:'无课';S.courseEffect=courses[S.day%7]?courses[S.day%7][1]:'';S.weather=getWeather(S.day);
-  updateBossMaxHp(); // 每次新的一天更新血量上限
-  document.getElementById('storyText').textContent=`${getDateString(S.day)}。${S.course}（${S.courseEffect}）`;document.getElementById('storyFlavor').textContent='';
+  updateBossMaxHp();
+  document.getElementById('storyText').textContent=`${getDateString(S.day)}。${S.course}（${S.courseEffect}）`;
+  document.getElementById('storyFlavor').textContent='';
   if(S.day > MAX_DAYS && !S.gameOver){S.gameOver = true; S.victory = false;showOverlay('⏰ 时间耗尽', `两个月期限已到，你未能揭露滚木的所有恶行。\n滚木继续在学校里逍遥法外...`, 'lose');addLog('⏰ 两个月期限已到，游戏结束');}
   S.dailyTasks.forEach((t,i) => { if(!S.dailyTaskDone[i] && t.check()){ S.dailyTaskDone[i] = true; t.reward(); addLog('📜 每日任务完成！','card'); }});
   S.dailyFoundCount = 0; S.rainLoveCount = 0; refreshDailyTasks(); saveSkillData(); updateUI();
 }
-// addLog 中加入Toast调用
 function addLog(msg,type=''){const c=document.getElementById('logContainer');const e=document.createElement('div');e.className='log-entry '+type;e.innerHTML=`<span class="tg">[${getDateString(S.day)}]</span> ${msg}`;c.insertBefore(e,c.firstChild);while(c.children.length>50)c.removeChild(c.lastChild);showToast(msg);}
 function checkGameOver(){if(S.gameOver)return;if(S.bossHp<=0&&!S.endingChosen){S.gameOver=true;S.victory=true;triggerEndingSelection();}else if(S.playerHp<=0){S.gameOver=true;S.victory=false;showOverlay('💀 你被击败...','','lose');addLog('💀 游戏结束');}else if(S.affection>=100){S.gameOver=true;S.victory=false;showOverlay('🎭 歌剧魅影','好感度100%...','lose');}if(S.gameOver&&S.bossHp>0)updateUI();}
 function showOverlay(title,text,type){document.getElementById('overlayTitle').textContent=title;document.getElementById('overlayText').textContent=text;document.getElementById('overlayBox').className='overlay-box '+type;document.getElementById('overlayStats').innerHTML=S.victory?getStats().join('<br>'):'';const q=document.getElementById('loseQuote');if(type==='lose'){q.textContent='你完蛋了，放学别走，车棚见，我带兄弟来砍你。';q.style.display='block'}else q.style.display='none';document.getElementById('overlay').style.display='flex';}
