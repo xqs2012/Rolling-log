@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>滚木规则怪谈</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:"Microsoft YaHei","苹方","PingFang SC",sans-serif;
+            background:#0a0a0a;color:#c0c0c0;min-height:100vh;
+            display:flex;justify-content:center;align-items:center;padding:10px;
+        }
+        .container{
+            max-width:950px;width:100%;background:linear-gradient(180deg,#1a1025 0%,#0f0a18 100%);
+            border-radius:20px;padding:18px;box-shadow:0 0 60px rgba(180,40,40,0.2);border:1px solid #333;
+            position:relative;overflow:hidden;
+        }
+        .toast{
+            position:fixed;top:20px;left:20px;z-index:9999;
+            background:rgba(0,0,0,0.9);color:#ffd700;
+            border:1px solid #ff8800;border-left:4px solid #ff8800;
+            border-radius:8px;padding:10px 16px;font-size:0.85em;
+            max-width:350px;box-shadow:0 0 20px rgba(255,136,0,0.4);
+            animation:slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            pointer-events:none;
+        }
+        @keyframes slideIn{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+        .shake{animation:shake 0.3s ease}
+        .flash{animation:flash 0.2s ease}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+        @keyframes flash{0%,100%{opacity:1}50%{opacity:0.5;background:rgba(255,0,0,0.1)}}
+        .header{text-align:center;margin-bottom:10px}
+        .title{font-size:1.6em;color:#ff5555;text-shadow:0 0 25px rgba(255,60,60,0.5);letter-spacing:3px}
+        .subtitle{color:#999;font-size:0.7em}
+        .info-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+        .info-cell{flex:1;min-width:70px;background:rgba(255,255,255,0.03);border-radius:8px;padding:6px;text-align:center;border:1px solid #2a2a2a}
+        .info-cell .lbl{font-size:0.6em;color:#777;text-transform:uppercase;letter-spacing:1px}
+        .info-cell .val{font-size:1em;font-weight:bold;margin-top:2px}
+        .hp-section{display:flex;gap:10px;margin-bottom:8px}
+        .hp-box{flex:1;background:#111;border-radius:10px;padding:8px 12px}
+        .hp-box.player{border:2px solid #334488}
+        .hp-box.boss{border:2px solid #552222}
+        .hp-label{display:flex;justify-content:space-between;font-size:0.75em;margin-bottom:4px}
+        .hp-outer{height:20px;background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #333}
+        .hp-inner{height:100%;transition:width 0.4s ease;border-radius:10px}
+        .hp-inner.player-hp{background:linear-gradient(90deg,#2266aa,#4488dd,#66aaee);box-shadow:inset 0 0 10px rgba(100,180,255,0.3)}
+        .hp-inner.player-hp.low{animation:pulse 1s infinite}
+        .hp-inner.boss-hp{background:linear-gradient(90deg,#aa2222,#dd4444,#ee5555);box-shadow:inset 0 0 10px rgba(255,80,80,0.3)}
+        .hp-inner.boss-hp.low{animation:pulse 0.5s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+        .bar-section{background:#111;border-radius:8px;padding:6px 12px;margin-bottom:6px;border:1px solid #2a2a2a}
+        .bar-header{display:flex;justify-content:space-between;font-size:0.7em;margin-bottom:3px}
+        .bar-outer{height:12px;background:#1a1a1a;border-radius:6px;overflow:hidden}
+        .ap-inner{height:100%;background:linear-gradient(90deg,#6644aa,#8866cc);transition:width 0.3s;border-radius:6px}
+        .aff-inner{height:100%;background:linear-gradient(90deg,#ff4444,#ff8800,#ffcc00,#44cc44);transition:width 0.4s;border-radius:6px}
+        .spread-inner{height:100%;background:linear-gradient(90deg,#4488cc,#66bbff);transition:width 0.5s;border-radius:6px}
+        .pressure-inner{height:100%;background:linear-gradient(90deg,#8844cc,#cc66ff);transition:width 0.5s;border-radius:6px}
+        .title-badge{display:inline-block;background:rgba(255,150,0,0.2);border:1px solid #ff8800;border-radius:15px;padding:2px 8px;font-size:0.7em;color:#ffaa00;margin:2px}
+        .status-row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;font-size:0.7em}
+        .status-tag{padding:3px 8px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid #333}
+        .status-tag.active{background:rgba(255,170,0,0.15);border-color:#ff8800;color:#ffaa00}
+        .cards-section{margin-bottom:6px}
+        .cards-title{font-size:0.7em;color:#888;margin-bottom:4px}
+        .cards-row{display:flex;gap:5px;flex-wrap:wrap}
+        .card{flex:1;min-width:60px;background:rgba(255,255,255,0.02);border:2px solid #2a2a2a;border-radius:8px;padding:6px;text-align:center;font-size:0.65em;transition:all 0.3s}
+        .card.owned{border-color:#ff8800;box-shadow:0 0 10px rgba(255,140,0,0.2);background:rgba(255,140,0,0.06);cursor:pointer}
+        .card.owned:hover{border-color:#ffaa00;box-shadow:0 0 15px rgba(255,170,0,0.35);transform:translateY(-1px)}
+        .card.locked{opacity:0.3;border-style:dashed}
+        .card .ci{font-size:1.4em}
+        .card .cn{font-weight:bold;color:#ffaa00;font-size:0.85em}
+        .card .cd{color:#999;font-size:0.75em}
+        .items-section{margin-bottom:6px}
+        .items-row{display:flex;gap:5px;flex-wrap:wrap}
+        .item{background:rgba(100,200,255,0.08);border:1px solid #4488aa;border-radius:6px;padding:4px 8px;font-size:0.65em;color:#88ccff;cursor:pointer}
+        .item:hover{background:rgba(100,200,255,0.15)}
+        .story-panel{background:rgba(0,0,0,0.35);border-radius:10px;padding:12px;margin-bottom:8px;border-left:3px solid #ff5555;min-height:45px}
+        .story-text{font-size:0.85em;line-height:1.5;color:#ddd}
+        .story-flavor{color:#ff9999;font-style:italic;font-size:0.75em;margin-top:3px}
+        .attack-display{background:rgba(255,0,0,0.06);border-radius:8px;padding:6px 10px;margin-bottom:6px;font-size:0.7em;color:#ff7777;text-align:center;border:1px dashed #552222}
+        .heal-hint{background:rgba(0,200,100,0.06);border-radius:8px;padding:5px 10px;margin-bottom:6px;font-size:0.7em;color:#55cc88;text-align:center;border:1px dashed #225544}
+        .actions-label{font-size:0.7em;color:#888;margin-bottom:4px}
+        .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+        @media(max-width:500px){.actions-grid{grid-template-columns:1fr}.hp-section{flex-direction:column}}
+        .action-btn{padding:8px 10px;background:linear-gradient(135deg,#1a1a30 0%,#121228 100%);border:2px solid #2a2a2a;border-radius:8px;color:#ddd;cursor:pointer;font-size:0.8em;transition:all 0.2s;text-align:left;font-family:inherit;position:relative}
+        .action-btn:hover:not(:disabled){border-color:#ff6666;transform:translateY(-1px);box-shadow:0 2px 10px rgba(255,50,50,0.12)}
+        .action-btn:disabled{opacity:0.25;cursor:not-allowed}
+        .action-btn .ap-tag{position:absolute;top:5px;right:6px;font-size:0.6em;color:#8866cc;font-weight:bold}
+        .action-btn.attack-btn{border-color:#662222;background:linear-gradient(135deg,#2a1010 0%,#1a0808 100%)}
+        .action-btn.zsy-btn{border-color:#886622;background:linear-gradient(135deg,#2a2010 0%,#1a1008 100%)}
+        .action-btn.music-btn{border-color:#446644;background:linear-gradient(135deg,#102010 0%,#081008 100%)}
+        .end-day-btn{width:100%;padding:8px;margin-top:6px;background:#1a1a30;border:2px solid #334466;border-radius:8px;color:#99bbee;cursor:pointer;font-size:0.85em;font-weight:bold;transition:all 0.3s;font-family:inherit}
+        .end-day-btn:hover{background:#222240;box-shadow:0 0 15px rgba(60,80,180,0.2)}
+        .log-section{margin-top:10px;background:rgba(0,0,0,0.3);border-radius:8px;padding:8px;max-height:110px;overflow-y:auto}
+        .log-section h4{font-size:0.65em;color:#666;margin-bottom:5px}
+        .log-entry{font-size:0.65em;padding:2px 0;border-bottom:1px solid #1a1a1a}
+        .log-entry .tg{color:#8866cc;margin-right:3px}
+        .log-entry.dmg{color:#ff7777}
+        .log-entry.heal{color:#55cc88}
+        .log-entry.card{color:#ffaa00}
+        .log-entry.warn{color:#ff8844}
+        .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:100}
+        .overlay-box{background:#1a1025;padding:25px;border-radius:20px;text-align:center;max-width:420px;border:2px solid;animation:fadeIn 0.5s}
+        @keyframes fadeIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+        .overlay-box.win{border-color:#ffaa00;box-shadow:0 0 50px rgba(255,170,0,0.4)}
+        .overlay-box.lose{border-color:#ff2222;box-shadow:0 0 50px rgba(255,0,0,0.4)}
+        .overlay-box h2{font-size:1.4em;margin-bottom:8px}
+        .overlay-box p{color:#ccc;margin-bottom:14px;line-height:1.5;font-size:0.85em}
+        .overlay-box .lose-quote{color:#ff4444;font-size:1.1em;font-weight:bold;margin:12px 0;text-shadow:0 0 12px rgba(255,0,0,0.4)}
+        .overlay-box .stats{text-align:left;font-size:0.75em;color:#aaa;margin:8px 0;line-height:1.6}
+        .restart-btn{padding:8px 22px;background:#cc3333;color:white;border:none;border-radius:16px;font-size:0.9em;cursor:pointer;font-family:inherit;transition:all 0.3s}
+        .restart-btn:hover{background:#ee4444;box-shadow:0 0 18px rgba(255,40,40,0.4)}
+        .unlock-tracker{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+        .unlock-node{flex:1;min-width:45px;text-align:center;font-size:0.6em;padding:3px;border-radius:5px;background:rgba(255,255,255,0.02);border:1px solid #2a2a2a;color:#666}
+        .unlock-node.activated{border-color:#ff8800;color:#ffaa00;background:rgba(255,140,0,0.08);font-weight:bold}
+        .unlock-node .unlock-icon{font-size:1.2em;display:block}
+        .key-hint{position:absolute;bottom:8px;right:15px;font-size:0.55em;color:#555;pointer-events:none}
+        .skillbar-row{display:flex;gap:8px;align-items:center;margin:6px 0 8px;flex-wrap:wrap}
+        .skill-open-btn{padding:8px 12px;border-radius:10px;border:1px solid #4a4a8a;background:linear-gradient(135deg,#18182f 0%,#0f1020 100%);color:#d7d7ff;cursor:pointer;font-family:inherit;font-size:.8em;font-weight:bold}
+        .skill-open-btn:hover{border-color:#8f7bff;box-shadow:0 0 14px rgba(120,90,255,.25)}
+        .skill-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.65em;color:#aaa}
+        .skill-meta span{padding:3px 8px;border:1px solid #2a2a2a;border-radius:999px;background:rgba(255,255,255,.03)}
+        .skill-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.86);display:flex;justify-content:center;align-items:center;padding:12px}
+        .skill-window{width:min(980px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#131122 0%,#0b0b14 100%);border:1px solid #40336a;border-radius:18px;box-shadow:0 0 60px rgba(120,70,255,.18);padding:14px}
+        .skill-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        .skill-title{font-size:1.2em;color:#d6c7ff;letter-spacing:2px;font-weight:bold}
+        .skill-close-btn{border:none;background:#2a173e;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+        .skill-close-btn:hover{background:#3a2254}
+        .skill-topline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+        .skill-topcard{background:rgba(255,255,255,.03);border:1px solid #2f2f49;border-radius:12px;padding:10px;text-align:center}
+        .skill-toplbl{font-size:.65em;color:#8c8ca8;margin-bottom:4px}
+        .skill-topval{font-size:1.1em;color:#fff;font-weight:bold}
+        .skill-attr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+        .skill-attr-card{background:rgba(255,255,255,.03);border:1px solid #2a2a3d;border-radius:12px;padding:10px}
+        .skill-attr-name{font-size:.75em;color:#a7a7d7;margin-bottom:6px;font-weight:bold}
+        .skill-attr-line{display:flex;justify-content:space-between;font-size:.68em;color:#9b9bb6;margin-bottom:6px}
+        .skill-attr-btn{width:100%;border:none;border-radius:10px;padding:7px 8px;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#191a31 0%,#11111f 100%);color:#e7e7ff;border:1px solid #45456b}
+        .skill-attr-btn:hover{border-color:#8f7bff}
+        .skill-attr-btn:disabled{opacity:.35;cursor:not-allowed}
+        .skill-tree-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+        .skill-tab{border:1px solid #30304a;background:#11111c;color:#bbb;border-radius:999px;padding:7px 12px;cursor:pointer;font-family:inherit;font-size:.75em}
+        .skill-tab.active{color:#fff;border-color:#8f7bff;box-shadow:0 0 12px rgba(140,100,255,.2)}
+        .skill-tree-body{border:1px solid #28283f;border-radius:14px;background:rgba(255,255,255,.02);padding:12px}
+        .skill-branch-title{font-size:.9em;color:#f0e7ff;margin-bottom:8px;font-weight:bold}
+        .skill-branch-desc{font-size:.7em;color:#9d9db8;margin-bottom:10px}
+        .skill-graph{display:grid;gap:10px}
+        .skill-node{min-width:150px;max-width:210px;flex:1;background:linear-gradient(180deg,#171726 0%,#10101a 100%);border:1px solid #343454;border-radius:12px;padding:10px;position:relative}
+        .skill-node.locked{opacity:.38;filter:grayscale(.35)}
+        .skill-node.unlocked{border-color:#7e63ff;box-shadow:0 0 12px rgba(120,90,255,.12)}
+        .skill-node.legendary{border-color:#ffb000;box-shadow:0 0 16px rgba(255,180,0,.18)}
+        .skill-node-name{font-size:.82em;font-weight:bold;color:#fff;margin-bottom:4px}
+        .skill-node-desc{font-size:.68em;color:#a7a7c2;line-height:1.45;min-height:34px}
+        .skill-node-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:.64em;color:#8f8fae}
+        .skill-learn-btn{width:100%;margin-top:8px;padding:7px 8px;border:none;border-radius:10px;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#3d2b7a 0%,#241949 100%);color:#fff}
+        .skill-learn-btn:hover{box-shadow:0 0 12px rgba(140,100,255,.22)}
+        .skill-learn-btn:disabled{opacity:.35;cursor:not-allowed}
+        .skill-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+        .skill-badge{font-size:.6em;padding:2px 6px;border-radius:999px;border:1px solid #333;color:#bbb;background:rgba(255,255,255,.03)}
+        .skill-badge.req{border-color:#6d5aa8;color:#c9bfff}
+        .skill-badge.perk{border-color:#745cff;color:#d9ccff}
+        .skill-badge.gold{border-color:#ffb000;color:#ffd67c}
+        .from-xqs{text-align:center;font-size:0.6em;color:#666;margin-top:10px;letter-spacing:1px}
+        .task-btn{padding:8px 12px;border-radius:10px;border:1px solid #6a6a4a;background:linear-gradient(135deg,#2a2a1f 0%,#1a1a0f 100%);color:#ffd700;cursor:pointer;font-size:.8em;font-weight:bold;margin-left:8px}
+        .task-overlay{position:fixed;inset:0;z-index:220;background:rgba(0,0,0,.88);display:flex;justify-content:center;align-items:center;padding:12px}
+        .task-window{width:min(700px,100%);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);border:1px solid #aa8c4a;border-radius:18px;padding:18px;color:#ddd}
+        .task-section{margin-bottom:16px;border-bottom:1px solid #333;padding-bottom:12px}
+        .task-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin:4px 0;font-size:0.8em}
+        .task-reward{color:#ffd700;font-size:0.7em}
+        .task-progress{color:#88ccff;font-size:0.7em}
+        .ending-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;padding:15px}
+        .ending-box{max-width:600px;width:100%;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);border:2px solid #ffaa00;border-radius:20px;padding:30px;text-align:center;color:#ddd;animation:fadeIn 1s}
+        .ending-box h1{color:#ffaa00;font-size:1.8em;margin-bottom:15px}
+        .ending-box .ending-text{line-height:2;font-size:0.9em;color:#ccc;margin-bottom:20px;min-height:200px}
+        .ending-box .ending-reward{color:#ffd700;font-size:0.85em;margin-bottom:20px}
+        .ending-choice-btn{padding:12px 24px;margin:8px;font-size:0.95em;font-family:inherit;border-radius:25px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555}
+        .ending-choice-btn:hover{border-color:#ffaa00;color:#ffaa00;box-shadow:0 0 20px rgba(255,170,0,0.3)}
+        .dlc-page{position:fixed;inset:0;z-index:700;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);display:flex;flex-direction:column;align-items:center;padding:20px;overflow-y:auto}
+        .dlc-page h1{color:#cc88ff;font-size:1.8em;margin:20px 0;text-align:center}
+        .dlc-page .dlc-chapter-name{color:#888;font-size:1em;margin-bottom:20px;text-align:center}
+        .dlc-page .dlc-content{max-width:650px;width:100%;line-height:2.2;font-size:0.95em;color:#ccc;white-space:pre-wrap;margin-bottom:20px}
+        .dlc-page .dlc-buttons{display:flex;flex-direction:column;gap:10px;max-width:400px;width:100%}
+        .dlc-page button{padding:12px 20px;font-size:0.9em;font-family:inherit;border-radius:20px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555;text-align:left}
+        .dlc-page button:hover{border-color:#cc88ff;color:#cc88ff;box-shadow:0 0 15px rgba(136,68,204,0.3)}
+        .dlc-page .dlc-back-btn{position:absolute;top:15px;left:15px;padding:8px 16px;font-size:0.8em;font-family:inherit;border-radius:15px;cursor:pointer;background:transparent;color:#888;border:1px solid #444}
+        .dlc-page .dlc-back-btn:hover{color:#fff;border-color:#fff}
+    </style>
+</head>
+<body>
+
+<div class="rules-overlay" id="rulesPage" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:300;display:flex;justify-content:center;align-items:center;padding:15px;backdrop-filter:blur(6px);">
+  <div class="rules-box" style="max-width:700px;width:100%;background:linear-gradient(180deg,#1e1530 0%,#140e20 100%);border:1px solid #cc5555;border-radius:24px;padding:28px 24px;box-shadow:0 0 80px rgba(200,60,60,0.35);color:#ddd;max-height:90vh;overflow-y:auto;text-align:center;">
+    <h1 style="font-size:2em;color:#ff6666;text-shadow:0 0 20px rgba(255,80,80,0.6);margin-bottom:10px;letter-spacing:3px;">⚔️ 滚木规则怪谈</h1>
+    <h2 style="font-size:1.1em;color:#ccc;margin-bottom:20px;font-weight:normal;border-bottom:1px dashed #554;padding-bottom:12px;">—— 揭露滚木恶行，守护滚木学校 ——</h2>
+    <div style="text-align:left;font-size:0.9em;line-height:1.7;color:#bbb;margin-bottom:22px;">
+      <p><span style="color:#ffaa55;font-weight:bold;">🎯 目标：</span>在两个月内（9月1日～10月31日，共61天）揭露滚木的恶行，将其<span style="color:#ffaa55;font-weight:bold;">生命值降至0</span>。</p>
+      <p><span style="color:#ffaa55;font-weight:bold;">📅 每日流程：</span>选择地点 → 执行行动（消耗AP） → 结束今天。AP耗尽后必须结束当天。</p>
+      <p><span style="color:#ffaa55;font-weight:bold;">⚡ 核心机制：</span></p>
+      <p>· 降低<span style="color:#ffaa55;font-weight:bold;">好感度</span>可提升你的攻击力，但好感度会影响<span style="color:#ffaa55;font-weight:bold;">滚木的血量上限</span>（好感度越高，滚木血量越高）。</p>
+      <p>· 通过<span style="color:#ffaa55;font-weight:bold;">变身卡</span>（HP降低时概率觉醒）可造成大量伤害。</p>
+      <p>· 使用<span style="color:#ffaa55;font-weight:bold;">道具</span>、发动<span style="color:#ffaa55;font-weight:bold;">组合技</span>、积累<span style="color:#ffaa55;font-weight:bold;">传播度</span>都能有效对抗滚木。</p>
+      <p>· <span style="color:#ffaa55;font-weight:bold;">⭐技能树</span>：攻击滚木获得经验，升级后获得技能点和属性点，用于学习强力技能。</p>
+      <p><span style="color:#ffaa55;font-weight:bold;">📜任务系统</span>：完成主线与支线任务可获得丰厚奖励。</p>
+      <p><span style="color:#ffaa55;font-weight:bold;">⚠️ 注意：</span></p>
+      <p>· 好感度达到100%触发"歌剧魅影"（失败）。</p>
+      <p>· 生命值归零或超过61天未击败滚木，游戏失败。</p>
+    </div>
+    <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
+      <button class="start-btn" onclick="startGame()" style="padding:12px 40px;font-size:1.2em;font-weight:bold;font-family:inherit;background:#cc3333;color:white;border:none;border-radius:30px;cursor:pointer;transition:all 0.3s;box-shadow:0 0 25px rgba(255,0,0,0.3);letter-spacing:2px;">开 始 游 戏</button>
+      <button class="dlc-entry-btn" onclick="startDLC()" style="padding:12px 40px;font-size:1.2em;font-weight:bold;font-family:inherit;background:linear-gradient(135deg,#1a1028 0%,#0f0818 100%);color:#cc88ff;border:1px solid #8844cc;border-radius:30px;cursor:pointer;transition:all 0.3s;">📁 序章</button>
+    </div>
+    <div class="from-xqs">From xqs2012</div>
+  </div>
+</div>
+
+<div class="dlc-page" id="dlcPage" style="display:none;">
+  <button class="dlc-back-btn" onclick="closeDLC()">✕ 返回主菜单</button>
+  <h1>📁 序章</h1>
+  <div class="dlc-chapter-name" id="dlcChapterName"></div>
+  <div class="dlc-content" id="dlcContent"></div>
+  <div class="dlc-buttons" id="dlcButtons"></div>
+</div>
+
+<div class="container" id="app" style="display:none;">
+  <div class="header">
+    <div class="title">⚔️ 正义的反击</div>
+    <div class="subtitle">—— 揭露滚木恶行，守护滚木学校 ——</div>
+  </div>
+  <div class="info-row">
+    <div class="info-cell"><div class="lbl">📅 日期</div><div class="val" id="dayVal" style="color:#ffaa00;">9月1日</div></div>
+    <div class="info-cell"><div class="lbl">⏰ 时段</div><div class="val" id="timeVal" style="color:#8866cc;">上午</div></div>
+    <div class="info-cell"><div class="lbl">📍 位置</div><div class="val" id="locVal">教室</div></div>
+    <div class="info-cell"><div class="lbl">🏷️ 称号</div><div class="val" id="titleVal" style="color:#ccc;">无</div></div>
+  </div>
+  <div class="hp-section">
+    <div class="hp-box player">
+      <div class="hp-label"><span style="color:#5599dd;">💙 你的生命</span><span id="playerHpText" style="font-weight:bold;color:#5599dd;">100/100</span></div>
+      <div class="hp-outer"><div class="hp-inner player-hp" id="playerHpBar" style="width:100%;"></div></div>
+      <div class="unlock-tracker">
+        <div class="unlock-node" id="unZsy"><span class="unlock-icon">⚖️</span>≤90</div>
+        <div class="unlock-node" id="unCqy"><span class="unlock-icon">📢</span>≤70</div>
+        <div class="unlock-node" id="unXqs"><span class="unlock-icon">💬</span>≤50</div>
+        <div class="unlock-node" id="unDzz"><span class="unlock-icon">👊</span>≤30</div>
+      </div>
+    </div>
+    <div class="hp-box boss">
+      <div class="hp-label"><span style="color:#ee4444;">👹 滚木</span><span id="bossHpText" style="font-weight:bold;color:#ee4444;">1500/1500</span></div>
+      <div class="hp-outer"><div class="hp-inner boss-hp" id="bossHpBar" style="width:100%;"></div></div>
+    </div>
+  </div>
+  <div class="bar-section"><div class="bar-header"><span>⚡ AP</span><span id="apText">5/5</span></div><div class="bar-outer"><div class="ap-inner" id="apBar" style="width:100%;"></div></div></div>
+  <div class="bar-section"><div class="bar-header"><span>❤️ 好感度</span><span id="affText">0（冷漠）</span></div><div class="bar-outer"><div class="aff-inner" id="affBar" style="width:50%;"></div></div></div>
+  <div class="bar-section"><div class="bar-header"><span>📢 传播</span><span id="spreadText">0%</span></div><div class="bar-outer"><div class="spread-inner" id="spreadBar" style="width:0%;"></div></div></div>
+  <div class="bar-section"><div class="bar-header"><span>🧠 压力</span><span id="pressureText">0/100</span></div><div class="bar-outer"><div class="pressure-inner" id="pressureBar" style="width:0%;"></div></div></div>
+  <div class="status-row">
+    <span>状态：</span>
+    <span class="status-tag" id="tagStreak">🔥 连击x0</span>
+    <span class="status-tag" id="tagWeather">☀️ 晴天</span>
+    <span class="status-tag" id="tagBuff">-</span>
+    <span class="status-tag" id="tagRelation">👥 陌生</span>
+    <span class="status-tag" id="tagBossPhase">👹阶段1</span>
+  </div>
+  <div class="skillbar-row">
+    <button class="skill-open-btn" id="openSkillBtn">⭐ 技能树</button>
+    <button class="task-btn" id="openTaskBtn">📜 任务</button>
+    <div class="skill-meta"><span id="lvText">Lv.1</span><span id="expText">EXP 0/100</span><span id="spText">SP 3</span><span id="apText2">AP 0</span></div>
+  </div>
+  <div class="skill-overlay" id="skillOverlay" style="display:none;"><div class="skill-window"><div class="skill-head"><div class="skill-title">技能树</div><button class="skill-close-btn" id="closeSkillBtn">✕</button></div><div class="skill-topline"><div class="skill-topcard"><div class="skill-toplbl">等级</div><div class="skill-topval" id="skillLevelBig">1</div></div><div class="skill-topcard"><div class="skill-toplbl">经验</div><div class="skill-topval" id="skillExpBig">0 / 100</div></div><div class="skill-topcard"><div class="skill-toplbl">技能点</div><div class="skill-topval" id="skillPointBig">3</div></div><div class="skill-topcard"><div class="skill-toplbl">属性点</div><div class="skill-topval" id="attrPointBig">0</div></div></div><div class="skill-attr-grid" id="skillAttrGrid"></div><div class="skill-tree-tabs" id="skillTreeTabs"></div><div class="skill-tree-body" id="skillTreeBody"></div></div></div>
+  <div class="task-overlay" id="taskOverlay" style="display:none;"><div class="task-window" id="taskContent"></div></div>
+  <div class="ending-overlay" id="endingOverlay" style="display:none;"><div class="ending-box" id="endingBox"></div></div>
+  <div class="cards-section"><div class="cards-title">🃏 变身卡</div><div class="cards-row" id="cardsRow"></div></div>
+  <div class="items-section"><div class="cards-title">🎒 道具（点击使用 | 最多3个）</div><div class="items-row" id="itemsRow"></div></div>
+  <div class="attack-display" id="attackDisplay">👹 滚木：<strong>语言讥笑</strong>（5-8）</div>
+  <div class="heal-hint" id="healHint">💚 好感度≥30时每天恢复5HP</div>
+  <div class="story-panel"><div class="story-text" id="storyText">滚木站在走廊尽头盯着你。今天，你决定反击...</div><div class="story-flavor" id="storyFlavor"></div></div>
+  <div class="actions-label">🎯 行动</div><div class="actions-grid" id="actionsGrid"></div>
+  <button class="end-day-btn" id="endDayBtn">🌙 结束今天</button>
+  <div class="log-section"><h4>📜 记录</h4><div id="logContainer"><div class="log-entry"><span class="tg">[开始]</span> 反击开始！</div></div></div>
+  <div class="key-hint">快捷键: 1-4选择 | E结束 | Z使用ZSY</div>
+  <div class="from-xqs">From xqs2012</div>
+</div>
+<div class="overlay" id="overlay" style="display:none;"><div class="overlay-box" id="overlayBox"><h2 id="overlayTitle"></h2><p id="overlayText"></p><div class="stats" id="overlayStats"></div><div class="lose-quote" id="loseQuote" style="display:none;"></div><button class="restart-btn" id="restartBtn">🔄 重新挑战</button></div></div>
+
+<script>
+// ==================== Toast 弹框 ====================
+function showToast(msg) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
+}
+
+// ==================== DLC 系统 ====================
+const DLC = {
+  chapter: 0, scene: 0,
+  chapters: [
+    { name: '序章：1996年', scenes: [
+      { text: '画面不是学校。\n而是一间很小的出租房。\n没有BGM。只有时钟滴答声。\n一个八九岁的男孩坐在餐桌前。\n桌上放着一张试卷。\n\n98分。\n\n门开了。父亲回来了。\n他没有先看孩子。而是拿起试卷。\n沉默几秒。\n\n啪——\n试卷被狠狠摔在桌上。\n\n父亲："为什么不是100？"\n\n小男孩低着头。一句话都不敢说。\n母亲站在厨房。她没有阻止。\n只是轻轻说了一句："别惹你爸生气。"\n\n整个房间。没有任何人关心孩子为什么考98。\n所有人只关心。为什么不是100。\n\n屏幕缓缓出现名字。\n\nGJW', choices: null },
+      { text: '这一章几乎没有战斗。\n玩家每天的内容只有：\n起床。上学。回家。写作业。挨骂。睡觉。\n\n但是。每天都会有细节变化。\n\n第一次。父亲骂："没出息。"\n第二次。父亲开始摔杯子。\n第三次。开始打人。\n第四次。母亲开始一起骂。\n第五次。母亲开始说："你爸也是为了你好。"\n\n玩家慢慢发现。母亲不是坏人。\n她只是早就麻木了。', choices: null },
+      { text: '半夜。你被声音吵醒。\n你听见父母在吵架。\n\n父亲说："我小时候，你爷爷比我打得更狠。现在我不是也活得好好的？"\n\n这是你第一次听到关于爷爷的事。\n没有任何解释。\n继续。', choices: null }
+    ]},
+    { name: '第一章：学校', scenes: [
+      { text: '来到学校。\nGJW不是校霸。甚至很安静。\n\n但是。别人开始欺负他。\n因为：成绩太好。性格太闷。从不反抗。\n\n如果你选择告诉老师。\n老师说："同学之间闹着玩。你别太敏感。"\n\n如果告诉父亲。\n父亲只会说："被欺负说明你没本事。"\n\n这一刻。你第一次发现。\n家里没人保护他。学校也没人保护他。', choices: null }
+    ]},
+    { name: '第二章：第一次挥拳', scenes: [
+      { text: '某一天。有人把他的书撕了。\n\n你终于获得一个按钮。\n以前一直是灰色的。现在亮了。', choices: [
+        { text: '【反击】', nextChapter: 2, nextScene: 1 },
+        { text: '【忍让】', nextChapter: 2, nextScene: 2 }
+      ]},
+      { text: '一拳。\n对方倒了。\n全班安静。\n\n第二天。没有人再敢碰他。\nGJW第一次笑了。\n不是因为开心。\n而是因为。终于有人怕他了。\n\n当天晚上。他回家。父亲第一次没有骂他。\n因为老师打电话。说："你儿子终于像个男人了。"\n\n父亲拍拍他的肩。这是父亲第一次夸他。\n"早这样就好了。别人怕你，就没人欺负你。"\n\n这一句话。彻底改变了他。', choices: null },
+      { text: '你选择了忍让。\n但第二天。欺负变本加厉。\n他们开始撕你的课本。在你的椅子上倒墨水。\n\n你看着镜子里的自己。\n终于明白了一件事。\n\n有时候。忍让不会换来和平。\n只会换来更多的欺负。\n\n这个道理。你用了很久才明白。\n但当你明白的时候。\n你已经不是原来的你了。', choices: null }
+    ]},
+    { name: '第三章：权力的味道', scenes: [
+      { text: '后来。别人开始主动讨好他。\n送饮料。让座。替他写作业。\n老师开始偏袒他。\n\n你发现。以前自己怎么努力都得不到的东西。\n现在只需要别人害怕自己。就全部拥有了。', choices: null },
+      { text: '一个低年级学生被欺负。\n他站在角落。不敢说话。\n\n你看着他。就像看到了当年的自己。', choices: [
+        { text: '【救他】', nextChapter: 3, nextScene: 2 },
+        { text: '【无视】', nextChapter: 3, nextScene: 3 },
+        { text: '【一起欺负】', nextChapter: 3, nextScene: 4 }
+      ]},
+      { text: '你站了出来。\n把欺负他的人赶走了。\n\n那个低年级学生看着你。眼神里没有感激。\n只有恐惧。\n\n你忽然意识到。\n他怕你。就像别人怕那些人一样。\n\n你自言自语："这样真的有用吗……"', choices: null },
+      { text: '你转过头。假装没看见。\n\n后来。那个学生转学了。\n你没有再见过他。\n\n但有时候。你会想起他的眼神。\n然后告诉自己："这不是我的事。"', choices: null },
+      { text: '你走过去。不是救人。\n而是把那个孩子推得更远。\n\n你说："站起来。没人会帮你。"\n\n这一刻。你彻底明白。\n你已经不是受害者。而是施害者。\n\n他的台词越来越少。越来越冷。', choices: null }
+    ]},
+    { name: '第四章：真相', scenes: [
+      { text: '你回到家。\n父亲病重。躺在床上。\n\n第一次。父亲哭了。\n\n他说："对不起。"\n\n你震惊。\n\n父亲继续说："我小时候。你爷爷每天都打我。我发过誓。以后一定不会像他。"\n\n停顿很久。\n\n父亲看着自己的手。\n"可后来。我还是变成了他。"\n\n镜头慢慢移动。\n墙上挂着一张黑白照片。\n爷爷站着。父亲小时候跪着。\n和现在的你。一模一样。', choices: null }
+    ]},
+    { name: '最终章', scenes: [
+      { text: '几年后。\nGJW站在学校天台。\n下面所有学生都害怕他。\n\n他终于成为了"第一代滚木"。\n\n广播响起。"请各班维持纪律。"\n\nGJW笑了一下。\n他说出了最后一句话。\n\n"原来。害怕，真的比尊重容易。"\n\n镜头拉远。字幕开始滚动。\n\n就在你以为结束的时候。\n出现一张纸。\n\n标题：学生心理评估报告\n姓名：GJW\n最后一栏：建议：立即进行心理干预。\n下面盖着红章。\n\n已驳回。\n\n黑屏。', choices: null },
+      { text: '他没有成为父亲。\n\n他成为了另一个父亲。\n\n\n—— 序章 完 ——\n\n\n"理解一个人的过去，可以解释他的选择；\n但不能代替他为自己的选择负责。"', choices: null }
+    ]}
+  ]
+};
+
+function startGame() {
+  document.getElementById('rulesPage').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  document.getElementById('dlcPage').style.display = 'none';
+}
+
+function startDLC() {
+  document.getElementById('rulesPage').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('dlcPage').style.display = 'flex';
+  DLC.chapter = 0;
+  DLC.scene = 0;
+  renderDLCScene();
+}
+
+function closeDLC() {
+  document.getElementById('dlcPage').style.display = 'none';
+  document.getElementById('rulesPage').style.display = 'flex';
+}
+
+function renderDLCScene() {
+  const ch = DLC.chapters[DLC.chapter];
+  if (!ch || DLC.scene >= ch.scenes.length) {
+    if (DLC.chapter < DLC.chapters.length - 1) {
+      DLC.chapter++;
+      DLC.scene = 0;
+      renderDLCScene();
+      return;
+    } else {
+      closeDLC();
+      return;
+    }
+  }
+  const sc = ch.scenes[DLC.scene];
+  document.getElementById('dlcChapterName').textContent = ch.name;
+  document.getElementById('dlcContent').innerHTML = sc.text.replace(/\n/g, '<br>');
+  
+  const buttonsDiv = document.getElementById('dlcButtons');
+  buttonsDiv.innerHTML = '';
+  
+  if (sc.choices) {
+    sc.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.textContent = c.text;
+      btn.onclick = function() {
+        if (c.nextChapter !== undefined) {
+          DLC.chapter = c.nextChapter;
+          DLC.scene = c.nextScene;
+        } else {
+          DLC.scene++;
+        }
+        renderDLCScene();
+      };
+      buttonsDiv.appendChild(btn);
+    });
+  } else {
+    const continueBtn = document.createElement('button');
+    continueBtn.textContent = '继续 ▸';
+    continueBtn.onclick = function() {
+      DLC.scene++;
+      renderDLCScene();
+    };
+    buttonsDiv.appendChild(continueBtn);
+  }
+}
+
+// ==================== 游戏核心状态 ====================
+const S = {
+  day:1, timeIndex:0, timeNames:['上午','下午','放学后'], ap:5, maxAp:5,
+  playerHp:100, maxHp:100, bossHp:1500, bossMaxHp:1500, bossBaseMaxHp:1500,
+  affection:0, targeted:true, nailongBuff:0, angryPeople:0,
+  location:'classroom', spread:0, attackProgress:0, isAttacking:false,
+  gameOver:false, victory:false, titles:[],
+  cards:{zsy:false,xqs:false,cqy:false,dzz:false},
+  items:[], maxItems:3, dzzHpHalved:false, comboUsed:false,
+  streak:0, weather:'晴天', weatherDay:0, buffs:{}, bossPhase:1, musicCombo:0,
+  totalDmg:0, totalTaken:0, cardUses:0, foundCount:0, awakenCount:0, maxSpread:0,
+  course:'', courseEffect:'',
+  playerLevel:1, exp:0, needExp:100, skillPoint:3, attributePoint:0,
+  attributes:{body:3, intelligence:3, cool:3, technical:3, relic:0},
+  skills:{}, currentSkillTab:'body', _skillEffects:{},
+  mainQuestStage:1, reportCount:0,
+  sideQuestFlags:{sy:false, lsy:false, zqt:false, fbq:false},
+  sideQuestAttempts:{sy:0, lsy:0, zqt:0, fbq:0},
+  dailyTasks:[], dailyTaskDone:[false,false,false], dailyFoundCount:0,
+  permanentBonuses:{spreadBonus:0, dmgBonus:0, maxHpBonus:0, itemCapBonus:0},
+  rainLoveCount:0, bossRegenBoost:false,
+  pressure:0, maxPressure:100,
+  bossLearning:{report:0, music:0, spread:0, resist:0},
+  hiddenEventStep:0, hiddenEventFound:false,
+  npcStance:{teacher:'neutral', students:'neutral'},
+  blockedLocations:[], endingChosen:false, endingType:'',
+  ngPlusLevel:0, ngEnding:'',
+  parentCallCooldown: 0,
+  bossResilience: 0,
+  // 新增：反抗力与上一轮反抗伤害记录
+  resistPower: 0,
+  lastResistDmg: 0
+};
+
+const MAX_DAYS = 61;
+function getDateString(day){ const start = new Date(2025, 8, 1); const d = new Date(start.getTime() + (day-1)*86400000); return `${d.getMonth()+1}月${d.getDate()}日`; }
+
+function updateBossMaxHp(){
+    const affectionBonus = Math.max(0, S.affection * 3);
+    const growthBonus = Math.floor(S.day / 10) * 100;
+    S.bossMaxHp = S.bossBaseMaxHp + affectionBonus + growthBonus;
+    S.bossHp = Math.min(S.bossMaxHp, Math.max(1, S.bossHp));
+}
+
+const skillTreeData = {
+  body: { name:'⚔ Body', desc:'正面压制、反击、生存、爆发输出。', color:'#ff6b6b', perks: [
+    {id:'b1',name:'重拳',tier:1,req:1,max:3,desc:['普攻+10%','普攻+20%','普攻+35%'],gold:false},
+    {id:'b2',name:'猛击',tier:1,req:2,max:3,desc:['Boss伤害+5%','Boss伤害+10%','Boss伤害+20%'],gold:false},
+    {id:'b3',name:'连击',tier:2,req:4,max:3,desc:['连击倍率+10%','连击倍率+20%','连击倍率+35%'],gold:false},
+    {id:'b4',name:'狂怒',tier:2,req:6,max:3,desc:['HP<50%攻击+10%','HP<50%攻击+20%','HP<50%攻击+35%'],gold:false},
+    {id:'b5',name:'破甲',tier:3,req:8,max:3,desc:['Boss回血-15%','Boss回血-30%','Boss回血-50%'],gold:false},
+    {id:'b6',name:'处决',tier:3,req:10,max:1,desc:['Boss<20%时伤害翻倍'],gold:true},
+    {id:'b7',name:'不屈',tier:4,req:12,max:2,desc:['最大HP+10','最大HP+20'],gold:false},
+    {id:'b8',name:'一拳超人',tier:5,req:15,max:1,desc:['每局首次攻击额外+300伤害'],gold:true}
+  ]},
+  intelligence: { name:'🧠 Intelligence', desc:'调查、证据、预判、规则破解。', color:'#62c7ff', perks: [
+    {id:'i1',name:'观察者',tier:1,req:1,max:3,desc:['被发现率-8%','被发现率-16%','被发现率-28%'],gold:false},
+    {id:'i2',name:'侦查',tier:1,req:2,max:3,desc:['看见隐藏信息','看见更多隐藏信息','看见全部隐藏信息'],gold:false},
+    {id:'i3',name:'证据链',tier:2,req:4,max:3,desc:['举报伤害+20%','举报伤害+40%','举报伤害+70%'],gold:false},
+    {id:'i4',name:'预判',tier:2,req:6,max:2,desc:['下回合成功率+10%','下回合成功率+25%'],gold:false},
+    {id:'i5',name:'解构',tier:3,req:8,max:3,desc:['Boss攻击-5%','Boss攻击-10%','Boss攻击-20%'],gold:false},
+    {id:'i6',name:'规则破解',tier:4,req:12,max:1,desc:['每局可让一条规则失效一次'],gold:true},
+    {id:'i7',name:'全图索敌',tier:4,req:14,max:1,desc:['显示全部地点事件'],gold:true}
+  ]},
+  cool: { name:'📢 Cool', desc:'舆论、传播、控制场面。', color:'#7dff9a', perks: [
+    {id:'c1',name:'扩音器',tier:1,req:1,max:3,desc:['传播+10%','传播+20%','传播+35%'],gold:false},
+    {id:'c2',name:'煽动',tier:1,req:2,max:3,desc:['愤怒+1额外传播+5%','愤怒+1额外传播+10%','愤怒+1额外传播+20%'],gold:false},
+    {id:'c3',name:'热搜',tier:2,req:4,max:3,desc:['传播衰减-1','传播衰减-2','传播不衰减'],gold:false},
+    {id:'c4',name:'全民审判',tier:3,req:8,max:1,desc:['传播100%时额外造成300伤害'],gold:true},
+    {id:'c5',name:'舆论护盾',tier:3,req:10,max:2,desc:['被发现时无视一次','每局两次'],gold:false},
+    {id:'c6',name:'封口令',tier:4,req:12,max:1,desc:['Boss回复效果减半'],gold:true}
+  ]},
+  technical: { name:'🔧 Technical', desc:'队友、道具、资源、系统联动。', color:'#f5b04b', perks: [
+    {id:'t1',name:'工具箱',tier:1,req:1,max:3,desc:['道具上限+1','道具上限+2','道具上限+3'],gold:false},
+    {id:'t2',name:'维修',tier:1,req:2,max:3,desc:['创可贴回血+5','创可贴回血+10','创可贴回血+20'],gold:false},
+    {id:'t3',name:'队友协作',tier:2,req:4,max:3,desc:['队友伤害+10%','队友伤害+20%','队友伤害+35%'],gold:false},
+    {id:'t4',name:'后勤调度',tier:3,req:8,max:2,desc:['每天随机多1个道具','每天随机多2个道具'],gold:false},
+    {id:'t5',name:'系统超频',tier:4,req:12,max:1,desc:['AP上限+1，回合效率提升'],gold:true}
+  ]},
+  relic: { name:'✨ Relic', desc:'觉醒、改写、终局力量。', color:'#d58bff', perks: [
+    {id:'r1',name:'觉醒',tier:1,req:1,max:4,desc:['HP<90解锁','HP<70强化','HP<50再强化','HP<30最高强化'],gold:false},
+    {id:'r2',name:'共鸣',tier:2,req:4,max:3,desc:['变身卡伤害+10%','变身卡伤害+20%','变身卡伤害+35%'],gold:false},
+    {id:'r3',name:'规则改写',tier:4,req:12,max:1,desc:['每局可改写1条规则'],gold:true},
+    {id:'r4',name:'终极觉醒',tier:5,req:15,max:1,desc:['每局一次，任意行动无视AP'],gold:true}
+  ]}
+};
+
+function skillLevel(id){ return S.skills[id]||0; }
+function skillTreeKeyById(id){ for(const k in skillTreeData) if(skillTreeData[k].perks.some(p=>p.id===id)) return k; return null; }
+function getSkillById(id){ for(const k in skillTreeData){ const s=skillTreeData[k].perks.find(p=>p.id===id); if(s) return s; } return null; }
+function canLearnSkill(skill){ const lv=skillLevel(skill.id); if(lv>=skill.max) return false; if(S.skillPoint<=0) return false; const key=skillTreeKeyById(skill.id); if(S.attributes[key] < skill.req) return false; return true; }
+function learnSkill(id){ const sk=getSkillById(id); if(!sk) return; const key=skillTreeKeyById(id); if(!key) return; if(S.skillPoint<=0) return addLog('⭐ 技能点不足','warn'); if(S.attributes[key] < sk.req) return addLog('🔒 属性不足','warn'); if(skillLevel(id)>=sk.max) return; S.skillPoint--; S.skills[id] = (S.skills[id]||0)+1; applySkillEffects(); addLog(`⭐ 学习技能【${sk.name}】 Lv${S.skills[id]}`,'card'); syncSkillUI(); renderSkillTree(); updateUI(); }
+function upgradeAttr(attr){ if(S.attributePoint<=0) return addLog('💎 属性点不足','warn'); if(S.attributes[attr]>=20) return; S.attributePoint--; S.attributes[attr]++; addLog(`⬆️ ${attr} +1`,'heal'); applySkillEffects(); syncSkillUI(); renderSkillTree(); updateUI(); }
+function grantExp(v){ S.exp += v; while(S.exp >= S.needExp){ S.exp -= S.needExp; S.playerLevel++; S.needExp = Math.floor(100 + (S.playerLevel-1)*30); S.skillPoint += 2; S.attributePoint += 1; addLog(`⬆️ 升级到 Lv.${S.playerLevel}，获得2技能点和1属性点`,'card'); } syncSkillUI(); }
+function applySkillEffects(){ const e = { attackBonus:0, bossBonus:0, spreadBonus:0, foundCut:0, cardBonus:0, itemCap:0 }; for(const id in S.skills){ const lv=S.skills[id]; if(lv<=0) continue; if(id==='b1') e.attackBonus += [0.1,0.2,0.35][lv-1]; if(id==='b2') e.bossBonus += [0.05,0.1,0.2][lv-1]; if(id==='c1') e.spreadBonus += [0.1,0.2,0.35][lv-1]; if(id==='i1') e.foundCut += [8,16,28][lv-1]; if(id==='r2') e.cardBonus += [0.1,0.2,0.35][lv-1]; if(id==='t1') e.itemCap = [1,2,3][lv-1]; } S._skillEffects = e; if(e.itemCap) S.maxItems = 3 + e.itemCap; }
+function syncSkillUI(){ document.getElementById('lvText').textContent = `Lv.${S.playerLevel}`; document.getElementById('expText').textContent = `EXP ${S.exp}/${S.needExp}`; document.getElementById('spText').textContent = `SP ${S.skillPoint}`; document.getElementById('apText2').textContent = `AP ${S.attributePoint}`; document.getElementById('skillLevelBig').textContent = S.playerLevel; document.getElementById('skillExpBig').textContent = `${S.exp} / ${S.needExp}`; document.getElementById('skillPointBig').textContent = S.skillPoint; document.getElementById('attrPointBig').textContent = S.attributePoint; const grid = document.getElementById('skillAttrGrid'); if(grid){ const labels = [['body','⚔ Body','正面压制'],['intelligence','🧠 Intelligence','调查破解'],['cool','📢 Cool','传播舆论'],['technical','🔧 Technical','资源后勤'],['relic','✨ Relic','觉醒改写']]; grid.innerHTML = labels.map(([k,n,d])=>`<div class="skill-attr-card"><div class="skill-attr-name">${n}</div><div class="skill-attr-line"><span>${d}</span><span>Lv.${S.attributes[k]}</span></div><button class="skill-attr-btn" onclick="upgradeAttr('${k}')" ${S.attributePoint<=0||S.attributes[k]>=20?'disabled':''}>升级属性</button></div>`).join(''); } }
+function renderSkillTree(){ const tabs = document.getElementById('skillTreeTabs'); const body = document.getElementById('skillTreeBody'); tabs.innerHTML = Object.keys(skillTreeData).map(k=>`<button class="skill-tab ${S.currentSkillTab===k?'active':''}" onclick="setSkillTab('${k}')">${skillTreeData[k].name}</button>`).join(''); const tree = skillTreeData[S.currentSkillTab]; body.innerHTML = `<div class="skill-branch-title">${tree.name}</div><div class="skill-branch-desc">${tree.desc}</div><div class="skill-graph">${tree.perks.map(sk=>{const lv=skillLevel(sk.id);const cls=lv>0?'unlocked':'locked';const gold=sk.gold?'legendary':'';return `<div class="skill-node ${cls} ${gold}"><div class="skill-node-name">${sk.name}</div><div class="skill-node-desc">${sk.desc[Math.min(lv,sk.desc.length)-1]||sk.desc[0]}</div><div class="skill-node-meta"><span>Lv.${lv}/${sk.max}</span><span>需求 ${sk.req}</span></div><div class="skill-badges"><span class="skill-badge req">属性 ${sk.req}</span><span class="skill-badge perk">${sk.gold?'终极':'Perk'}</span>${sk.gold?'<span class="skill-badge gold">Gold</span>':''}</div><button class="skill-learn-btn" onclick="learnSkill('${sk.id}')" ${canLearnSkill(sk)?'':'disabled'}>${lv>=sk.max?'已满级':(canLearnSkill(sk)?'学习/升级':'无法学习')}</button></div>`;}).join('')}</div>`; }
+function setSkillTab(k){ S.currentSkillTab=k; renderSkillTree(); }
+function openSkillTree(){ document.getElementById('skillOverlay').style.display='flex'; renderSkillTree(); syncSkillUI(); }
+function closeSkillTree(){ document.getElementById('skillOverlay').style.display='none'; }
+function saveSkillData(){ const data = { playerLevel:S.playerLevel, exp:S.exp, needExp:S.needExp, skillPoint:S.skillPoint, attributePoint:S.attributePoint, attributes:S.attributes, skills:S.skills, currentSkillTab:S.currentSkillTab }; localStorage.setItem('rollwood_skill_save',JSON.stringify(data)); }
+function loadSkillData(){ const raw = localStorage.getItem('rollwood_skill_save'); if(!raw) return; try{ const d=JSON.parse(raw); S.playerLevel = d.playerLevel||1; S.exp = d.exp||0; S.needExp = d.needExp||100; S.skillPoint = d.skillPoint||0; S.attributePoint = d.attributePoint||0; S.attributes = Object.assign({body:3,intelligence:3,cool:3,technical:3,relic:0}, d.attributes||{}); S.skills = d.skills||{}; S.currentSkillTab = d.currentSkillTab||'body'; applySkillEffects(); syncSkillUI(); }catch(e){} }
+
+const courses={1:['语文课','揭露恶行效果+20%'],2:['数学课','行动成功率+10%'],3:['体育课','移动不消耗AP'],4:['音乐课','魅惑成功率+20%'],5:['自习课','AP+1'],6:['班会课','揭露恶行效果翻倍'],0:['无课','无特殊效果']};
+function getWeekEffect(d){const w=d%7;if(w===1)return['周一滚木活跃',10];if(w===3)return['周三德育处巡查',50];if(w===5)return['周五滚木心情好',-20];return['平日',0];}
+function getWeather(d){if(d%3===0)return'雨天';if(d%7===0)return'阴天';return'晴天';}
+const bossAtks=[{name:'语言讥笑',min:5,max:8,desc:'滚木在你耳边阴阳怪气地讥笑...'},{name:'踹门',min:8,max:12,desc:'滚木一脚踹开教室门！'},{name:'推人',min:6,max:10,desc:'滚木从背后猛推你一把！'},{name:'打人',min:10,max:15,desc:'滚木抬手就打过来！'},{name:'暗中盯梢',min:4,max:7,desc:'滚木悄悄跟踪你...'},{name:'召唤小弟',min:12,max:18,desc:'滚木带着小弟围住你！'},{name:'绝望反击',min:18,max:28,desc:'滚木疯狂反击！'}];
+function getBossAtk(){if(S.bossHp<200)return bossAtks[6];if(S.bossHp<500)return bossAtks[Math.random()<0.5?4:5];if(S.bossHp<800)return bossAtks[Math.floor(Math.random()*3)+1];return bossAtks[0];}
+function getAffLabel(a){if(a>=80)return'😍极度喜爱';if(a>=50)return'😊友好';if(a>=30)return'🤗略有好感';if(a>=0)return'😐冷漠';if(a>=-30)return'😒不满';if(a>=-60)return'😠愤怒';return'💀狂暴';}
+const cardDefs={zsy:{name:'ZSY',full:'政治与法律',icon:'⚖️',dmg:80,desc:'召唤校长德育处',hp:90,flavor:'你大吼一声！校长和德育处老师把滚木团团围住！',log:'⚖️ ZSY：召唤围攻！造成80伤害',failFlavor:'你正准备大吼...突然分了心，错过了时机！',failLog:'💔 ZSY失败：分心了...'},cqy:{name:'CQY',full:'告老师联盟',icon:'📢',dmg:70,desc:'召唤管理层',hp:70,flavor:'老师、级长、主任、校长全部到场！',log:'📢 CQY：召唤管理层！造成70伤害'},xqs:{name:'XQS',full:'嘴炮王',icon:'💬',dmg:55,desc:'嘴炮攻击',hp:50,flavor:'你一顿输出，滚木面红耳赤！',log:'💬 XQS：嘴炮攻击！造成55伤害',onUse:()=>{if(!S.titles.includes('嘴炮王')){S.titles.push('嘴炮王');addLog('🏆 获得【嘴炮王】','card')}}},dzz:{name:'DZZ',full:'物理攻击',icon:'👊',dmg:110,desc:'物理攻击',hp:30,flavor:'你一拳打出！滚木也还手了...HP减半！',log:'👊 DZZ：物理攻击！110伤害，HP减半',onUse:()=>{S.dzzHpHalved=true;S.playerHp=Math.floor(S.playerHp/2);addLog('⚠️ HP减半！','warn')}}};
+const itemDefs={recorder:{name:'📱录音笔',desc:'抵消一次被发现',onUse:()=>{S.buffs.recorder=true;addLog('📱 录音笔就绪，下次被发现自动抵消','heal')}},amulet:{name:'🛡️护身符',desc:'免疫一次攻击',onUse:()=>{S.buffs.amulet=true;addLog('🛡️ 护身符就绪，免疫下次攻击','heal')}},handbook:{name:'📘校规手册',desc:'下次揭露效果翻倍',onUse:()=>{S.buffs.handbook=true;addLog('📘 下次揭露恶行效果翻倍','card')}},speaker:{name:'🎤扩音器',desc:'传播+15%',onUse:()=>{S.spread=Math.min(100,S.spread+15);addLog('🎤 使用扩音器！传播+15%','card')}},bandaid:{name:'💊创可贴',desc:'恢复10HP',onUse:()=>{S.playerHp=Math.min(S.maxHp,S.playerHp+10);addLog('💊 使用创可贴！HP+10','heal')}}};
+const locations={classroom:{name:'教室',icon:'🏫',events:[{id:'expose',name:'📢 揭露恶行',ap:3,desc:'向全班揭露滚木的所作所为',flavor:'同学们议论纷纷...',eff:{spread:15,angry:1,aff:-10,log:'揭露恶行！传播+15%，愤怒+1'},found:35},{id:'resist',name:'⚔️ 开始反抗',ap:2,desc:'正面反抗滚木',flavor:'这是一场持久的斗争...',eff:{atkProg:25,log:'反抗进度+25%'},isAtk:true,found:30,cond:()=>!S.isAttacking},{id:'study',name:'📝 认真听课',ap:1,desc:'专心听讲，降低存在感',flavor:'滚木没注意到你...',eff:{log:'认真听课，被发现概率降低'},found:10,onUse:()=>{S.buffs.studyBuff=2;tryTriggerSideQuest('zqt');}},{id:'rally',name:'🤝 拉拢同学',ap:3,desc:'联合更多同学对抗滚木',flavor:'越来越多人站在你这边！',eff:{spread:10,angry:2,log:'拉拢同学！传播+10%，愤怒+2'},found:25,onUse:()=>{tryTriggerSideQuest('lsy');}}]},hallway:{name:'走廊',icon:'🚪',events:[{id:'nailong',name:'😂 奶龙大笑',ap:2,desc:'模仿奶龙捧腹大笑',flavor:'笑声回荡，滚木被震住了...',eff:{nailong:2,targeted:false,log:'奶龙笑声！2回合安全'},cond:()=>S.targeted,found:5},{id:'spread2',name:'📢 向其他班传播',ap:2,desc:'在走廊传播滚木的恶行',flavor:'消息在年级里传开！',eff:{spread:10,log:'传播+10%'},found:30,onUse:()=>{tryTriggerSideQuest('sy');}},{id:'observe',name:'🔍 暗中观察',ap:1,desc:'观察滚木的行动规律',flavor:'你发现了滚木的弱点...',eff:{log:'暗中观察，下回合成功率+20%'},found:5,onUse:()=>{S.buffs.observeBuff=true}},{id:'photo',name:'📱 偷拍证据',ap:2,desc:'偷偷拍下滚木的恶行',flavor:'证据在手！',eff:{spread:15,log:'偷拍证据！传播+15%'},found:40,onUse:()=>{tryTriggerSideQuest('sy');}}]},music_room:{name:'音乐教室',icon:'🎵',events:[{id:'rainLove',name:'🎤 唱《雨爱》',ap:2,desc:'用深情的歌声感化滚木（连续使用效果递减，夜间滚木回血翻倍）',flavor:'滚木听得入神...',eff:{aff:5,log:'唱《雨爱》！好感度+5'},found:20,charm:true,onUse:()=>{S.rainLoveCount++;if(S.rainLoveCount >= 3) { S.affection += 2; addLog('🎤 连续唱《雨爱》效果减半，好感度仅+2', 'warn'); }S.bossRegenBoost = true;S.bossLearning.music = (S.bossLearning.music||0) + 1;tryTriggerSideQuest('fbq');}},{id:'dududu',name:'🎵 唱dududu',ap:2,desc:'鼓舞自己，免疫一次攻击',flavor:'你充满力量！',eff:{log:'唱dududu！获得免疫护盾'},found:10,onUse:()=>{S.buffs.dududuShield=true;addLog('🛡️ 获得免疫护盾！','heal')}},{id:'improv',name:'🎹 即兴创作',ap:2,desc:'随机效果',flavor:'音乐的力量是神秘的...',eff:{log:'即兴创作！'},found:15,onUse:()=>{const r=Math.random();if(r<0.33){S.affection+=10;addLog('🎶 好感度+10','heal')}else if(r<0.66){S.affection-=10;addLog('🎶 好感度-10','warn')}else{S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('🎶 HP+5','heal')}}}]},office:{name:'教务处',icon:'📋',events:[{id:'report',name:'📋 报告德育处',ap:3,desc:'正式报告滚木的所有恶行',flavor:'德育处老师震怒！',eff:{bossDmg:150,aff:-40,log:'🔥 报告德育处！HP-150！'},found:10,onUse:()=>{S.reportCount++;S.bossLearning.report = (S.bossLearning.report||0) + 1;if(S.mainQuestStage===2&&S.reportCount>=2)advanceMainQuest();}},{id:'evidence',name:'📸 收集证据',ap:2,desc:'整理滚木恶行的证据',flavor:'证据确凿！',eff:{spread:20,log:'收集证据！传播+20%'},found:20},{id:'callParent',name:'📞 打电话给家长',ap:3,desc:'叫家长来学校',flavor:'家长来了，滚木立刻老实了',eff:{targeted:false,log:'家长保护！2回合安全'},found:5,cond:() => S.parentCallCooldown <= 0,onUse:()=>{S.buffs.parentProtect=2;S.parentCallCooldown = 7;addLog('📞 家长已介入，但短期内无法再次施压','warn');}},{id:'writeLetter',name:'📝 写举报信',ap:2,desc:'写一封详细的举报信',flavor:'这封信将送到校长办公室',eff:{spread:10,angry:1,log:'写举报信！传播+10%，愤怒+1'},found:15}]},rooftop:{name:'天台',icon:'🏙️',events:[{id:'gaze',name:'🌅 眺望远方',ap:1,desc:'放松心情，恢复体力',flavor:'微风拂面，心情平静了些',eff:{log:'眺望远方，HP+5'},found:5,onUse:()=>{S.playerHp=Math.min(S.maxHp,S.playerHp+5);S.pressure = Math.max(0, S.pressure - 10);addLog('🌅 HP+5，压力-10','heal')}},{id:'shout',name:'📣 对全校喊话',ap:3,desc:'在天台向全校揭露滚木',flavor:'全校都听到了！',eff:{spread:25,log:'对全校喊话！传播+25%'},found:50},{id:'think',name:'🤔 思考对策',ap:2,desc:'冷静思考下一步计划',flavor:'你想到了新的策略...',eff:{log:'思考对策，下回合行动成功率+30%'},found:5,onUse:()=>{S.buffs.thinkBuff=true;S.pressure = Math.max(0, S.pressure - 15);addLog('🧠 思考对策，压力-15','heal')}}]}};
+function getSpecialDay(d){if(d===3)return{name:'雨天',desc:'滚木懒得出来',eff:()=>{S.weather='雨天';S.weatherDay=1}};if(d===6)return{name:'考试日',desc:'提前交卷，多1AP',eff:()=>{S.maxAp=6;S.ap=S.maxAp;addLog('📝 考试日！AP上限+1','card')}};if(d===9)return{name:'校庆日',desc:'滚木太兴奋了',eff:()=>{addLog('🎉 校庆日！滚木攻击力翻倍','warn')}};if(d===12)return{name:'家长会',desc:'所有行动效果翻倍',eff:()=>{addLog('👨‍👩‍👧 家长会！行动效果翻倍','card')}};return null;}
+function randomEvent(){const events=[{name:'校园广播表扬',eff:()=>{S.spread=Math.min(100,S.spread+20);addLog('📺 校园广播表扬你！传播+20%','card')}},{name:'校报刊登文章',eff:()=>{S.spread=Math.min(100,S.spread+30);addLog('📰 校报刊登你的文章！传播+30%','card')}},{name:'体检日',eff:()=>{S.playerHp=Math.max(0,S.playerHp-5);addLog('🏥 体检发现伤口，HP-5','warn')}},{name:'同学生日会',eff:()=>{S.affection+=10;addLog('🎂 生日会！好感度+10','heal')}},{name:'突击检查',eff:()=>{S.targeted=false;S.nailongBuff=2;addLog('📋 突击检查！滚木收敛2天','card')}},{name:'暴雨停课',eff:()=>{S.ap=S.maxAp*2;addLog('🌧️ 暴雨停课！AP翻倍','card')}},{name:'才艺表演',eff:()=>{S.affection+=15;addLog('🎤 才艺表演魅惑成功！好感度+15','heal')}},{name:'匿名举报',eff:()=>{S.bossHp=Math.max(0,S.bossHp-30);S.angryPeople++;addLog('📞 匿名举报！滚木HP-30，愤怒+1','card')}}];const ev=events[Math.floor(Math.random()*events.length)];ev.eff();addLog(`🎲 随机事件：${ev.name}`,'card');}
+function checkHpThresholds(){Object.entries(cardDefs).forEach(([k,d])=>{if(S.playerHp<=d.hp&&!S.cards[k]&&Math.random()<0.12){S.cards[k]=true;S.awakenCount++;addLog(`🃏 HP≤${d.hp}！觉醒【${d.name}】！`,'card');document.getElementById('storyFlavor').textContent=`绝境中觉醒了：${d.name}！`;}});}
+function checkItemDrop(){if(S.location==='office'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('recorder')){S.items.push('recorder');addLog('📱 获得录音笔！','card');}if(S.location==='rooftop'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('amulet')){S.items.push('amulet');addLog('🛡️ 获得护身符！','card');}if(S.location==='classroom'&&Math.random()<0.1&&S.items.length<S.maxItems&&!S.items.includes('handbook')){S.items.push('handbook');addLog('📘 获得校规手册！','card');}if(S.location==='hallway'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('speaker')){S.items.push('speaker');addLog('🎤 获得扩音器！','card');}if(S.affection>=50&&Math.random()<0.15&&S.items.length<S.maxItems&&!S.items.includes('bandaid')){S.items.push('bandaid');addLog('💊 获得创可贴！','card');}}
+function useItem(name){if(!S.items.includes(name))return;S.items=S.items.filter(i=>i!==name);itemDefs[name].onUse();updateUI();}
+function checkFound(baseChance){let chance=baseChance;if(S.buffs.studyBuff>0)chance=Math.floor(chance/2);if(S.weather==='雨天')chance-=10;if(S.affection>=30)chance-=5;if(S.spread>60)chance-=15;chance=Math.max(0,chance);if(Math.random()*100<chance){if(S.buffs.recorder){S.buffs.recorder=false;addLog('📱 录音笔抵消了被发现！','heal');S.foundCount++;return false;}S.foundCount++;S.dailyFoundCount++;S.pressure = Math.min(S.maxPressure, S.pressure + 3);return true;}return false;}
+
+// bossCounter 新增死亡判定保留
+function bossCounter(){
+    if(S.bossHp<=0||!S.targeted)return;
+    if(S.buffs.amulet){S.buffs.amulet=false;addLog('🛡️ 护身符抵消了攻击！','heal');return;}
+    if(S.buffs.dududuShield){S.buffs.dududuShield=false;addLog('🎵 dududu护盾抵消了攻击！','heal');return;}
+    const atk=getBossAtk();let dmg=Math.floor(Math.random()*(atk.max-atk.min+1))+atk.min;
+    if(S.bossHp<200)dmg=Math.floor(dmg*1.6);if(S.day===9)dmg*=2;const weekEff=getWeekEffect(S.day);
+    if(weekEff[1]<0)dmg=Math.floor(dmg*0.8);if(S.dzzHpHalved)dmg=Math.floor(dmg*1.5);if(S.spread>90)dmg=Math.floor(dmg*0.8);
+    S.playerHp=Math.max(0,S.playerHp-dmg);S.totalTaken+=dmg;S.pressure = Math.min(S.maxPressure, S.pressure + 5);
+    addLog(`👹 滚木【${atk.name}】！-${dmg}HP`,'dmg');
+    if(atk.name==='踹门')document.getElementById('app').classList.add('shake');
+    if(atk.name==='绝望反击')document.getElementById('app').classList.add('flash');
+    setTimeout(()=>{document.getElementById('app').classList.remove('shake','flash')},300);
+    if(S.playerHp<=0 && !S.gameOver){
+        S.gameOver=true;S.victory=false;
+        showOverlay('💀 你被击败...','','lose');
+        addLog('💀 游戏结束');
+        updateUI();
+    }
+    if(S.bossHp<500&&Math.random()<0.4){const dmg2=Math.floor(Math.random()*8)+3;S.playerHp=Math.max(0,S.playerHp-dmg2);S.totalTaken+=dmg2;addLog(`👹 小弟追加攻击！-${dmg2}HP`,'dmg');
+        if(S.playerHp<=0 && !S.gameOver){
+            S.gameOver=true;S.victory=false;
+            showOverlay('💀 你被击败...','','lose');
+            addLog('💀 游戏结束');
+            updateUI();
+        }
+    }
+}
+
+function musicComboCheck(){if(S.location==='music_room'){S.musicCombo++;if(S.musicCombo===2){addLog('🎶 音乐光环！下回合不消耗AP','card');S.buffs.musicFree=true}if(S.musicCombo===3){addLog('🎶 滚木被感染，下回合不攻击','card');S.buffs.musicStun=true}if(S.musicCombo===4){S.spread=Math.min(100,S.spread+40);S.musicCombo=0;addLog('🌟 校园歌星！传播+40%','card')}}else{S.musicCombo=0}}
+function streakCheck(success){if(success){S.streak++;if(S.streak>=2)addLog('🔥 势头正盛！下回合效果+50%','card')}else S.streak=0;}
+function checkAffEvent(){if(S.affection<=-30&&!S._aff30){S._aff30=true;S.angryPeople++;addLog('😠 滚木开始公开说你坏话！愤怒+1','warn')}if(S.affection<=-60&&!S._aff60){S._aff60=true;addLog('😡 滚木去教务处告状！AP-1持续2天','warn');S.maxAp=Math.max(3,S.maxAp-1);S._aff60penalty=2}if(S.affection<=-90&&!S._aff90){S._aff90=true;addLog('💀 滚木写了退学申请要你签字！消耗3AP驳回','warn')}if(S.affection>=60&&!S._aff60p){S._aff60p=true;addLog('🛡️ 滚木开始保护你！伤害-20%','heal')}}
+function getStats(){return[`📅 总天数：${S.day}`,`⚔️ 总输出：${S.totalDmg}`,`💔 承受伤害：${S.totalTaken}`,`🃏 使用变身卡：${S.cardUses}次`,`👁️ 被发现：${S.foundCount}次`,`✨ 觉醒：${S.awakenCount}次`,`📢 传播峰值：${S.maxSpread}%`,`🧠 压力峰值：${S.maxPressureReached||S.pressure}`,`🏆 最终评分：${getRank()}`];}
+function getRank(){const score=S.day*2+S.totalDmg-S.totalTaken+S.cardUses*10+S.spread;if(score>500)return'S';if(score>350)return'A';if(score>200)return'B';if(score>100)return'C';return'D';}
+function updateUI(){
+  document.getElementById('dayVal').textContent = getDateString(S.day);
+  document.getElementById('timeVal').textContent=S.timeNames[S.timeIndex];document.getElementById('locVal').textContent=locations[S.location]?.name||'未知';
+  const tEl=document.getElementById('titleVal');if(S.titles.length>0){tEl.innerHTML=S.titles.map(t=>`<span class="title-badge">${t}</span>`).join('');tEl.style.color='';}else{tEl.textContent='无';tEl.style.color='#ccc';}
+  document.getElementById('apText').textContent=`${S.ap}/${S.maxAp}`;document.getElementById('apBar').style.width=(S.ap/S.maxAp*100)+'%';
+  document.getElementById('playerHpText').textContent=`${S.playerHp}/${S.maxHp}`;document.getElementById('playerHpBar').style.width=(S.playerHp/S.maxHp*100)+'%';document.getElementById('playerHpBar').className='hp-inner player-hp'+(S.playerHp<30?' low':'');
+  document.getElementById('bossHpText').textContent=`${S.bossHp}/${S.bossMaxHp}`;document.getElementById('bossHpBar').style.width=(S.bossHp/S.bossMaxHp*100)+'%';document.getElementById('bossHpBar').className='hp-inner boss-hp'+(S.bossHp<200?' low':'');
+  document.getElementById('affText').textContent=`${S.affection}（${getAffLabel(S.affection)}）`;document.getElementById('affBar').style.width=((S.affection+100)/200*100)+'%';
+  document.getElementById('spreadText').textContent=`${S.spread}%`;document.getElementById('spreadBar').style.width=S.spread+'%';S.maxSpread=Math.max(S.maxSpread,S.spread);
+  document.getElementById('pressureText').textContent=`${S.pressure}/${S.maxPressure}`;document.getElementById('pressureBar').style.width=(S.pressure/S.maxPressure*100)+'%';S.maxPressureReached = Math.max(S.maxPressureReached||0, S.pressure);
+  const atk=getBossAtk();document.getElementById('attackDisplay').innerHTML=`👹 滚木：<strong>${atk.name}</strong>（${atk.min}-${atk.max}）`;
+  const hh=document.getElementById('healHint');if(S.affection>=30){hh.innerHTML='💚 <strong style="color:#55ff88;">回血条件满足！</strong>每天恢复5HP';hh.style.borderColor='#225544';}else{hh.innerHTML=`💚 好感度需≥30（当前${S.affection}）才能回血`;hh.style.borderColor='#552222';}
+  document.getElementById('tagStreak').textContent=`🔥 连击x${S.streak}`;document.getElementById('tagStreak').className='status-tag'+(S.streak>=2?' active':'');
+  document.getElementById('tagWeather').textContent=`${S.weather==='雨天'?'🌧️':S.weather==='阴天'?'☁️':'☀️'} ${S.weather}`;
+  const buffs=[];if(S.buffs.studyBuff>0)buffs.push('📝低调');if(S.buffs.observeBuff>0)buffs.push('🔍观察');if(S.buffs.thinkBuff)buffs.push('🤔策略');if(S.buffs.musicFree)buffs.push('🎶免AP');if(S.buffs.dududuShield)buffs.push('🛡️护盾');if(S.buffs.parentProtect>0)buffs.push('👨‍👩‍👧保护');
+  document.getElementById('tagBuff').textContent=buffs.length>0?buffs.join(' '):'-';document.getElementById('tagBuff').className='status-tag'+(buffs.length>0?' active':'');
+  const rel=S.spread>90?'拥护':S.spread>60?'信任':S.spread>30?'友好':'陌生';document.getElementById('tagRelation').textContent=`👥 ${rel}`;
+  const phaseLabel = S.bossHp > 1000 ? '阶段1' : S.bossHp > 500 ? '阶段2' : '阶段3';document.getElementById('tagBossPhase').textContent = `👹${phaseLabel}`;
+  ['zsy','cqy','xqs','dzz'].forEach(k=>{document.getElementById('un'+k.charAt(0).toUpperCase()+k.slice(1)).className='unlock-node'+(S.cards[k]?' activated':'');});
+  checkTitles();renderCards();renderItems();renderActions();checkGameOver();syncSkillUI();
+}
+function checkTitles(){if(S.affection<-50&&!S.titles.includes('背刺王')&&!S.titles.includes('小男娘')){S.titles.push(Math.random()<0.5?'背刺王':'小男娘');addLog(`🏷️ 滚木给你起称号：【${S.titles[S.titles.length-1]}】`,'warn');}}
+function renderCards(){const row=document.getElementById('cardsRow');row.innerHTML='';let has=false;Object.entries(cardDefs).forEach(([k,d])=>{if(!S.cards[k])return;has=true;const c=document.createElement('div');c.className='card owned';if(k==='zsy')c.style.borderColor='#ffaa00';c.innerHTML=`<div class="ci">${d.icon}</div><div class="cn">${d.name}</div><div class="cd">${d.dmg}伤害</div>`;c.onclick=()=>k==='zsy'?useZSY():useCard(k);row.appendChild(c);});if(!has)row.innerHTML='<div style="color:#666;font-size:0.7em;">降低HP觉醒变身卡</div>';
+  if(S.cards.zsy&&S.cards.dzz&&!S.comboUsed&&!S.gameOver){const cc=document.createElement('div');cc.className='card owned';cc.style.borderColor='#ff6600';cc.style.boxShadow='0 0 12px rgba(255,100,0,0.4)';cc.innerHTML='<div class="ci">💥</div><div class="cn" style="color:#ff6600;">组合技</div><div class="cd">200伤害</div>';cc.onclick=()=>useCombo('zsy+dzz');row.appendChild(cc);}
+  if(S.cards.zsy&&S.cards.cqy&&!S._comboZsyCqy&&!S.gameOver){const cc=document.createElement('div');cc.className='card owned';cc.style.borderColor='#8888ff';cc.innerHTML='<div class="ci">📋</div><div class="cn" style="color:#8888ff;">法政双打</div><div class="cd">150伤害</div>';cc.onclick=()=>useCombo('zsy+cqy');row.appendChild(cc);}
+  if(S.cards.xqs&&S.cards.cqy&&!S._comboXqsCqy&&!S.gameOver){const cc=document.createElement('div');cc.className='card owned';cc.style.borderColor='#88ccff';cc.innerHTML='<div class="ci">📢</div><div class="cn" style="color:#88ccff;">舆论风暴</div><div class="cd">125伤害</div>';cc.onclick=()=>useCombo('xqs+cqy');row.appendChild(cc);}
+  if(S.cards.xqs&&S.cards.dzz&&!S._comboXqsDzz&&!S.gameOver){const cc=document.createElement('div');cc.className='card owned';cc.style.borderColor='#ff8844';cc.innerHTML='<div class="ci">💪</div><div class="cn" style="color:#ff8844;">嘴炮物理</div><div class="cd">140伤害</div>';cc.onclick=()=>useCombo('xqs+dzz');row.appendChild(cc);}
+}
+function renderItems(){const row=document.getElementById('itemsRow');row.innerHTML='';if(S.items.length===0){row.innerHTML='<span style="color:#555;font-size:0.65em;">暂无道具</span>';return;}S.items.forEach(i=>{const el=document.createElement('span');el.className='item';el.textContent=itemDefs[i].name;el.title=itemDefs[i].desc;el.onclick=()=>useItem(i);row.appendChild(el);});}
+function renderActions(){const grid=document.getElementById('actionsGrid');grid.innerHTML='';if(S.gameOver||S.ap<=0)return;if(S.cards.zsy){const b=document.createElement('button');b.className='action-btn zsy-btn';b.disabled=S.ap<2;b.innerHTML='⚖️ 召唤校长德育处 <span class="ap-tag">AP2</span>';b.onclick=()=>useZSY();grid.appendChild(b);}if(S.isAttacking&&S.attackProgress<100){const b=document.createElement('button');b.className='action-btn attack-btn';b.disabled=S.ap<2;b.innerHTML='⚔️ 继续反抗 <span class="ap-tag">AP2</span>';b.onclick=()=>continueAttack();grid.appendChild(b);}const loc=locations[S.location];loc.events.forEach((ev,i)=>{if(ev.cond&&!ev.cond())return;const b=document.createElement('button');b.className='action-btn';if(ev.isAtk)b.classList.add('attack-btn');if(ev.charm)b.classList.add('music-btn');b.disabled=S.ap<ev.ap;b.innerHTML=`${ev.name} <span class="ap-tag">AP${ev.ap}</span>`;b.title=ev.desc;b.setAttribute('data-idx',i);b.onclick=()=>executeEvent(ev);grid.appendChild(b);});Object.keys(locations).forEach(lk=>{if(S.blockedLocations.includes(lk))return;if(lk===S.location)return;const ld=locations[lk];const b=document.createElement('button');b.className='action-btn';b.disabled=S.ap<1;b.innerHTML=`前往 ${ld.icon} ${ld.name} <span class="ap-tag">AP1</span>`;b.onclick=()=>moveTo(lk);grid.appendChild(b);});}
+
+// 伤害计算统一加入坚韧减免
+function getResilienceFactor() {
+    return Math.max(0.1, 1 - S.bossResilience * 0.03);
+}
+
+function executeEvent(ev){
+  if(S.ap<ev.ap||S.gameOver)return;
+  S.ap-=ev.ap;
+  let mult=1;
+  if(S.course==='语文课'&&ev.id==='expose')mult=1.2;
+  if(S.course==='班会课'&&ev.id==='expose')mult=2;
+  if(S.day===12)mult*=2;
+  if(S.streak>=2)mult*=1.5;
+  if(S.buffs.observeBuff){mult*=1.2;S.buffs.observeBuff=false}
+  if(S.buffs.thinkBuff){mult*=1.3;S.buffs.thinkBuff=false}
+  if(ev.id==='report'&&S.bossLearning.report>=2) mult *= 0.7;
+  if(ev.id==='spread2'&&S.bossLearning.spread>=3) mult *= 0.8;
+  if(S.pressure >= 70) mult *= 0.85;
+  if(S.pressure >= 90) mult *= 0.7;
+  const found=checkFound(ev.found||25);
+  if(found){addLog('👁️ 被滚木发现了！','warn');bossCounter();streakCheck(false)}
+  else streakCheck(true);
+  if(ev.eff.aff){S.affection+=Math.floor(ev.eff.aff*mult);updateBossMaxHp();}
+  if(ev.eff.angry)S.angryPeople+=ev.eff.angry;
+  if(ev.eff.targeted!==undefined)S.targeted=ev.eff.targeted;
+  if(ev.eff.nailong)S.nailongBuff=ev.eff.nailong;
+  if(ev.eff.spread){S.spread=Math.min(100,S.spread+Math.floor(ev.eff.spread*mult*(1+S.permanentBonuses.spreadBonus/100)));S.bossLearning.spread=(S.bossLearning.spread||0)+1;}
+  if(ev.eff.bossDmg){const d=Math.floor(ev.eff.bossDmg*mult*(1+S.permanentBonuses.dmgBonus/100) * getResilienceFactor());S.bossHp=Math.max(0,S.bossHp-d);S.totalDmg+=d;grantExp(d);}
+  if(ev.eff.atkProg){S.isAttacking=true;S.attackProgress=Math.min(100,S.attackProgress+Math.floor(ev.eff.atkProg*mult));S.bossLearning.resist=(S.bossLearning.resist||0)+1;}
+  if(ev.onUse)ev.onUse();
+  if(S.location==='classroom'&&ev.id==='study'&&!S.hiddenEventFound&&S.day%5===0){S.hiddenEventStep++;if(S.hiddenEventStep===1) addLog('📄 你在课本里发现了一张旧纸条...');else if(S.hiddenEventStep===2) addLog('📄 纸条背面写着半个日期...');else if(S.hiddenEventStep===3){S.hiddenEventFound=true;S.skillPoint+=3;addLog('🔍 你拼凑出了隐藏的真相！+3SP');}}
+  document.getElementById('storyText').textContent=ev.desc;
+  if(ev.eff.log)addLog((S.streak>=2?'🔥 ':'')+ev.eff.log,found?'warn':'');
+  if(S.spread>=100){const spreadDmg=Math.floor(60 * getResilienceFactor());S.bossHp=Math.max(0,S.bossHp-spreadDmg);S.totalDmg+=spreadDmg;S.spread=0;grantExp(spreadDmg);addLog('📢 恶行传遍全校！HP-'+spreadDmg,'card');}
+  if(S.buffs.musicStun){S.buffs.musicStun=false}
+  else if(!found&&S.bossHp>0&&S.targeted&&!S.buffs.amulet&&!S.buffs.dududuShield)bossCounter();
+  if(S.nailongBuff>0){S.nailongBuff--;if(S.nailongBuff<=0){S.targeted=true;addLog('⚠ 奶龙效果消失','warn')}}
+  if(S.buffs.studyBuff>0)S.buffs.studyBuff--;
+  if(S.buffs.parentProtect>0){S.buffs.parentProtect--;if(S.buffs.parentProtect<=0){S.targeted=true}}
+  if(S._aff60penalty>0){S._aff60penalty--;if(S._aff60penalty<=0){S.maxAp=Math.min(6,S.maxAp+1);addLog('📋 告状惩罚结束，AP恢复','heal')}}
+  musicComboCheck();checkHpThresholds();checkItemDrop();checkAffEvent();
+  checkMainQuest();updateBlockedLocations();advanceTime();updateUI();
+}
+function useZSY(){if(S.ap<2||S.gameOver||!S.cards.zsy)return;S.ap-=2;if(Math.random()<0.5){document.getElementById('storyText').textContent='你正准备大吼召唤校长...';document.getElementById('storyFlavor').textContent=cardDefs.zsy.failFlavor;addLog(cardDefs.zsy.failLog,'warn');streakCheck(false);}else{const d=Math.floor((S.streak>=2?120:80) * getResilienceFactor());S.bossHp=Math.max(0,S.bossHp-d);S.totalDmg+=d;S.cards.zsy=false;S.cardUses++;grantExp(d);document.getElementById('storyText').textContent='你大吼一声！校长和德育处赶到！';document.getElementById('storyFlavor').textContent=cardDefs.zsy.flavor;addLog(`⚖️ ZSY：造成${d}伤害`,'card');streakCheck(true);}advanceTime();updateUI();}
+function useCard(key){if(!S.cards[key]||S.gameOver)return;const d=cardDefs[key];let dmg=S.streak>=2?Math.floor(d.dmg*1.5):d.dmg;dmg = Math.floor(dmg * getResilienceFactor());S.bossHp=Math.max(0,S.bossHp-dmg);S.totalDmg+=dmg;S.cards[key]=false;S.cardUses++;grantExp(dmg);document.getElementById('storyText').textContent=`使用变身卡：${d.full}！`;document.getElementById('storyFlavor').textContent=d.flavor;addLog(d.log.replace(/\d+/,(m)=>dmg),'card');if(d.onUse)d.onUse();streakCheck(true);updateUI();}
+function useCombo(type){const combos={'zsy+dzz':{dmg:200,log:'💥 ZSY+DZZ组合技！200伤害！',flavor:'政治法律+物理攻击！校长德育处到场！',consume:['zsy','dzz'],flag:'comboUsed'},'zsy+cqy':{dmg:150,log:'📋 ZSY+CQY法政双打！150伤害！',flavor:'法律+行政联合打击！',consume:['zsy','cqy'],flag:'_comboZsyCqy'},'xqs+cqy':{dmg:125,log:'📢 XQS+CQY舆论风暴！125伤害！',flavor:'嘴炮+管理层联合！传播满100%',consume:['xqs','cqy'],flag:'_comboXqsCqy',extra:()=>{S.spread=100}},'xqs+dzz':{dmg:140,log:'💪 XQS+DZZ嘴炮物理！140伤害！',flavor:'嘴炮+物理连击！滚木下回合无法行动',consume:['xqs','dzz'],flag:'_comboXqsDzz',extra:()=>{S.buffs.musicStun=true}}};const c=combos[type];if(!c||S[c.flag])return;let dmg=S.streak>=2?Math.floor(c.dmg*1.5):c.dmg;dmg = Math.floor(dmg * getResilienceFactor());S.bossHp=Math.max(0,S.bossHp-dmg);S.totalDmg+=dmg;S.cardUses++;c.consume.forEach(k=>S.cards[k]=false);S[c.flag]=true;grantExp(dmg);document.getElementById('storyText').textContent='💥 组合技发动！';document.getElementById('storyFlavor').textContent=c.flavor;addLog(c.log.replace(/\d+/,(m)=>dmg),'card');if(c.extra)c.extra();if(type==='zsy+dzz')S.angryPeople=0;streakCheck(true);updateUI();}
+function continueAttack(){
+    if(S.ap<2||S.gameOver||!S.isAttacking)return;
+    S.ap-=2;
+    S.attackProgress += 25;
+    addLog(`⚔️ 反抗进度+25%（${S.attackProgress}%）`);
+    if(S.attackProgress >= 100){
+        S.isAttacking = false;
+        S.attackProgress = 0;
+        // 反抗力：积累的进度转化为伤害，且越战越勇
+        S.resistPower = Math.min(100, S.resistPower + 10);
+        let dmg = Math.floor((15 + S.resistPower * 0.8) * getResilienceFactor());
+        if(S.streak >= 2) dmg = Math.floor(dmg * 1.3);
+        S.bossHp = Math.max(0, S.bossHp - dmg);
+        S.totalDmg += dmg;
+        grantExp(dmg);
+        addLog(`⚔️ 反抗爆发！造成 ${dmg} 点伤害（反抗力 ${S.resistPower}）`,'dmg');
+        // 反击：被打断但仍受伤
+        const cdmg = Math.floor(Math.random()*16)+10;
+        const fc = S.dzzHpHalved ? Math.floor(cdmg*1.5) : cdmg;
+        S.playerHp = Math.max(0, S.playerHp - fc);
+        S.totalTaken += fc;
+        S.affection += 15;
+        updateBossMaxHp();
+        addLog(`💥 滚木打断反抗！-${fc}HP`,'dmg');
+        streakCheck(false);
+        if(S.playerHp <= 0 && !S.gameOver){
+            S.gameOver=true; S.victory=false;
+            showOverlay('💀 你被击败...','','lose');
+            addLog('💀 游戏结束');
+            updateUI();
+        }
+    } else {
+        if(Math.random()<0.4) bossCounter();
+        streakCheck(true);
+    }
+    checkHpThresholds();
+    advanceTime();
+    updateUI();
+}
+function moveTo(lk){if(S.ap<1||S.gameOver)return;if(S.blockedLocations.includes(lk)){addLog('🚫 该地点已被封锁！','warn');return;}S.ap-=(S.course==='体育课'?0:1);S.location=lk;document.getElementById('storyText').textContent=`你来到了${locations[lk].name}。`;addLog(`移动到${locations[lk].name}`);if(lk==='hallway'&&S.targeted&&Math.random()<0.25){addLog('🚪 走廊被围追堵截！','warn');bossCounter();streakCheck(false)}else streakCheck(true);musicComboCheck();checkHpThresholds();checkItemDrop();advanceTime();updateUI();}
+function advanceTime(){if(S.weatherDay>0){S.weatherDay--;if(S.weatherDay<=0)S.weather='晴天'}const used=S.maxAp-S.ap;const nt=Math.min(2,Math.floor(used/2));if(nt>S.timeIndex){S.timeIndex=nt;addLog(`⏰ ${S.timeNames[S.timeIndex]}`)}if(S.timeIndex>=2&&!S.gameOver)setTimeout(()=>{if(!S.gameOver&&S.timeIndex>=2)endDay()},400);}
+function updateBlockedLocations(){S.blockedLocations = [];if(S.day > 20 && S.npcStance.teacher === 'hostile') S.blockedLocations.push('office');if(S.day > 35 && S.bossHp < 500) S.blockedLocations.push('classroom');if(S.day > 50) S.blockedLocations.push('rooftop');}
+function endDay(){
+  if(S.gameOver)return;addLog(`🌙 ${getDateString(S.day)}结束`);
+  if(S.affection>=30){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 恢复5HP','heal');}else addLog('⚠️ 好感度不足，无法回血','warn');
+  if(S.affection>=30){S._healStreak=(S._healStreak||0)+1;if(S._healStreak>=3){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 连续3天好感≥30！额外+5HP','heal');S._healStreak=0}}else S._healStreak=0;
+  S.spread=Math.max(0,S.spread-5);let bh=Math.floor(Math.random()*16)+15;if(S.bossRegenBoost) { bh *= 2; addLog('⚠️ 滚木受到歌声刺激，夜间恢复量翻倍！', 'warn'); }S.bossHp=Math.min(S.bossMaxHp,S.bossHp+bh);addLog(`💤 滚木恢复${bh}HP`);S.bossRegenBoost = false;
+  
+  // 新增：低血量暴怒回血
+  if (S.bossHp < S.bossMaxHp * 0.3) {
+      let extraHeal = Math.floor(Math.random()*21)+20;
+      S.bossHp = Math.min(S.bossMaxHp, S.bossHp + extraHeal);
+      addLog('💢滚木暴怒，额外恢复'+extraHeal+'HP','warn');
+  }
+  
+  // 新增：坚韧层数增长
+  if (S.day % 10 === 0 && S.day > 0) {
+      S.bossResilience++;
+      addLog('🛡️滚木变得更加坚韧！伤害减免+'+(S.bossResilience*3)+'%','warn');
+  }
+  
+  S.pressure = Math.max(0, S.pressure - 5);if(S.pressure >= 80) addLog('😰 压力过高，你做了一个噩梦...', 'warn');
+  if(S.day > 15 && S.affection < -20) S.npcStance.teacher = 'hostile';if(S.spread > 50) S.npcStance.students = 'supportive';
+  S.isAttacking=false;S.attackProgress=0;S.streak=0;S.musicCombo=0;S.buffs={};const sp=getSpecialDay(S.day);if(sp){sp.eff();addLog(`📅 ${sp.name}：${sp.desc}`,'card')}if(S.day%4===0)randomEvent();if(S.playerHp<50&&S.day>10)S.bossHp=Math.max(0,S.bossHp-20);
+  // 新增：冷却递减
+  if (S.parentCallCooldown > 0) S.parentCallCooldown--;
+  S.day++;S.ap=S.maxAp;S.timeIndex=0;S.course=courses[S.day%7]?courses[S.day%7][0]:'无课';S.courseEffect=courses[S.day%7]?courses[S.day%7][1]:'';S.weather=getWeather(S.day);
+  updateBossMaxHp();
+  document.getElementById('storyText').textContent=`${getDateString(S.day)}。${S.course}（${S.courseEffect}）`;
+  document.getElementById('storyFlavor').textContent='';
+  if(S.day > MAX_DAYS && !S.gameOver){S.gameOver = true; S.victory = false;showOverlay('⏰ 时间耗尽', `两个月期限已到，你未能揭露滚木的所有恶行。\n滚木继续在学校里逍遥法外...`, 'lose');addLog('⏰ 两个月期限已到，游戏结束');}
+  S.dailyTasks.forEach((t,i) => { if(!S.dailyTaskDone[i] && t.check()){ S.dailyTaskDone[i] = true; t.reward(); addLog('📜 每日任务完成！','card'); }});
+  S.dailyFoundCount = 0; S.rainLoveCount = 0; refreshDailyTasks(); saveSkillData(); updateUI();
+}
+function addLog(msg,type=''){const c=document.getElementById('logContainer');const e=document.createElement('div');e.className='log-entry '+type;e.innerHTML=`<span class="tg">[${getDateString(S.day)}]</span> ${msg}`;c.insertBefore(e,c.firstChild);while(c.children.length>50)c.removeChild(c.lastChild);showToast(msg);}
+function checkGameOver(){if(S.gameOver)return;if(S.bossHp<=0&&!S.endingChosen){S.gameOver=true;S.victory=true;triggerEndingSelection();}else if(S.playerHp<=0){S.gameOver=true;S.victory=false;showOverlay('💀 你被击败...','','lose');addLog('💀 游戏结束');}else if(S.affection>=100){S.gameOver=true;S.victory=false;showOverlay('🎭 歌剧魅影','好感度100%...','lose');}if(S.gameOver&&S.bossHp>0)updateUI();}
+function showOverlay(title,text,type){document.getElementById('overlayTitle').textContent=title;document.getElementById('overlayText').textContent=text;document.getElementById('overlayBox').className='overlay-box '+type;document.getElementById('overlayStats').innerHTML=S.victory?getStats().join('<br>'):'';const q=document.getElementById('loseQuote');if(type==='lose'){q.textContent='你完蛋了，放学别走，车棚见，我带兄弟来砍你。';q.style.display='block'}else q.style.display='none';document.getElementById('overlay').style.display='flex';}
+function triggerEndingSelection(){
+  document.getElementById('endingOverlay').style.display = 'flex';
+  document.getElementById('endingBox').innerHTML = `<h1>滚木已经输了。</h1><p style="color:#ccc;margin:15px 0;">真正的选择，现在才开始。</p><button class="ending-choice-btn" onclick="showEnding(1)">【结束这一切】</button><button class="ending-choice-btn" onclick="showEnding(2)">【交给他们】</button><button class="ending-choice-btn" onclick="showEnding(3)">【坐下】</button>`;
+}
+function showEnding(type){
+  S.endingChosen = true;S.endingType = type === 1 ? 'judgement' : type === 2 ? 'silence' : 'inheritance';localStorage.setItem('rollwood_ending', S.endingType);
+  const box = document.getElementById('endingBox');
+  if(type === 1){box.innerHTML = `<h1 style="color:#ffaa00;">Ending I：审判（Judgement）</h1><div class="ending-text">滚木倒下。<br>学校恢复平静。<br>一年以后。<br>欺凌消失。<br>没有人再提起滚木。<br><br><i>"有时候，审判必须由受害者亲自完成。"</i></div><div class="ending-reward">🏆 获得称号：<b>审判者</b> | 二周目攻击力+5%</div><button class="restart-btn" onclick="restartGameNG(1)">🔄 开启二周目</button>`;S.titles.push('审判者');}
+  else if(type === 2){box.innerHTML = `<h1 style="color:#8888ff;">Ending II：沉默（Silence）</h1><div class="ending-text">校长。老师。全部保证严肃处理。<br>你离开学校。<br>字幕滚动。突然黑屏。<br>监控录像。深夜。学校后门。<br>一辆没有牌照的车。<br>滚木走出来。校长亲自送他。<br>校长："事情不能闹大。"<br>滚木："我明白。"<br>第二天。学校广播："经调查，一切均为误会。"<br>举报。记录。日志。全部删除。<br><br><i>"你赢了。可学校输了。"</i></div><div class="ending-reward">🏆 获得称号：<b>举报者</b> | 二周目解锁隐藏事件</div><button class="restart-btn" onclick="restartGameNG(2)">🔄 开启二周目</button>`;S.titles.push('举报者');}
+  else {box.innerHTML = `<h1 style="color:#cc44ff;">Ending III：继承（Inheritance）</h1><div class="ending-text">滚木倒在地上。没有求饶。只是笑。<br>他说："其实……你早就是了。"<br>系统出现一个从未见过的按钮。【接受】<br>你坐到了滚木以前的位置。<br>教室。所有学生安静。没人敢说话。<br>广播响起。"欢迎新任纪律负责人。"<br>桌子上的名字。滚木。慢慢变成你自己的名字。<br>一个新生推门。小声说："老师……我可以进来吗？"<br>黑屏。<br><br><i>"有人打败了怪物。有人成为了怪物。而怪物，从未消失。"</i></div><div class="ending-reward">🏆 隐藏称号：<b>新的滚木</b> | 二周目初始好感度-20，学生畏惧你</div><button class="restart-btn" onclick="restartGameNG(3)">🔄 开启二周目</button>`;S.titles.push('新的滚木');}
+}
+function restartGameNG(endingNum){S.ngPlusLevel = endingNum;S.ngEnding = endingNum === 1 ? 'judgement' : endingNum === 2 ? 'silence' : 'inheritance';document.getElementById('endingOverlay').style.display = 'none';restartGame();}
+function restartGame(){
+  const ng = S.ngPlusLevel > 0 || (S.victory && S.bossHp <= 0);const endingType = S.ngEnding || localStorage.getItem('rollwood_ending') || '';
+  Object.assign(S,{day:1,timeIndex:0,ap:5,maxAp:ng?7:5,playerHp:ng?110:100,maxHp:ng?110:100,bossHp:1500,bossMaxHp:1500,bossBaseMaxHp:1500,affection:endingType==='inheritance'? -20 : 0,targeted:true,nailongBuff:0,angryPeople:0,location:'classroom',spread:0,attackProgress:0,isAttacking:false,gameOver:false,victory:false,titles:ng?S.titles:[],cards:{zsy:false,xqs:false,cqy:false,dzz:false},items:[],maxItems:3,dzzHpHalved:false,comboUsed:false,streak:0,weather:'晴天',weatherDay:0,buffs:{},bossPhase:1,musicCombo:0,totalDmg:0,totalTaken:0,cardUses:0,foundCount:0,awakenCount:0,maxSpread:0,course:courses[1]?courses[1][0]:'无课',courseEffect:courses[1]?courses[1][1]:'',_ngPlus:ng,_aff30:false,_aff60:false,_aff90:false,_aff60p:false,_aff60penalty:0,_healStreak:0,_comboZsyCqy:false,_comboXqsCqy:false,_comboXqsDzz:false,
+    mainQuestStage:1,reportCount:0,sideQuestFlags:{sy:false,lsy:false,zqt:false,fbq:false},sideQuestAttempts:{sy:0,lsy:0,zqt:0,fbq:0},dailyTasks:[],dailyTaskDone:[false,false,false],dailyFoundCount:0,permanentBonuses:{spreadBonus:0,dmgBonus:endingType==='judgement'?5:0,maxHpBonus:0,itemCapBonus:0},
+    rainLoveCount:0,bossRegenBoost:false,pressure:0,maxPressure:100,bossLearning:{report:0,music:0,spread:0,resist:0},hiddenEventStep:0,hiddenEventFound:false,npcStance:{teacher:'neutral',students:'neutral'},blockedLocations:[],endingChosen:false,endingType:'',ngPlusLevel:ng?S.ngPlusLevel:0,ngEnding:endingType,parentCallCooldown:0,bossResilience:0,resistPower:0,lastResistDmg:0});
+  if(ng)S.cards={zsy:true,xqs:false,cqy:false,dzz:false};if(endingType==='silence')S.sideQuestFlags.sy=true;
+  S.playerLevel=1; S.exp=0; S.needExp=100; S.skillPoint=3; S.attributePoint=0;S.attributes={body:3,intelligence:3,cool:3,technical:3,relic:0}; S.skills={}; S.currentSkillTab='body';
+  applySkillEffects(); saveSkillData();document.getElementById('logContainer').innerHTML='<div class="log-entry"><span class="tg">[开始]</span> '+(ng?'二周目！滚木更强了！':'反击开始！')+'</div>';
+  if(endingType==='inheritance'){ document.getElementById('storyText').textContent='你成为了新的滚木。学生们看你的眼神已经不同了。'; addLog('👑 继承结局：你取代了滚木的位置。初始好感度-20。'); }
+  else document.getElementById('storyText').textContent=ng?'滚木复活了...这次他更强大！':'滚木站在走廊尽头。反击开始...';
+  document.getElementById('overlay').style.display='none';document.getElementById('endingOverlay').style.display='none';
+  refreshDailyTasks(); updateUI();
+}
+function tryTriggerSideQuest(questId) { if (S.sideQuestFlags[questId]) return; S.sideQuestAttempts[questId] = (S.sideQuestAttempts[questId] || 0) + 1; const attempts = S.sideQuestAttempts[questId]; const baseChance = 0.35; const isGuaranteed = attempts >= 4; if (Math.random() < baseChance || isGuaranteed) { S.sideQuestAttempts[questId] = 0; if (questId === 'sy') triggerSy(); else if (questId === 'lsy') triggerLsy(); else if (questId === 'zqt') triggerZqt(); else if (questId === 'fbq') triggerFbq(); } }
+function advanceMainQuest(){if(S.mainQuestStage===1){ S.mainQuestStage=2; S.skillPoint+=2; S.attributePoint+=1; addLog('🌟主线一完成：初露锋芒！+2SP +1AP'); }else if(S.mainQuestStage===2){ S.mainQuestStage=3; const r=Math.random(); if(r<0.5)S.cards.zsy=true; else if(r<0.75)S.cards.cqy=true; else S.cards.xqs=true; S.skillPoint+=3; addLog('🌟主线二完成：证据确凿！获得变身卡 +3SP'); }else if(S.mainQuestStage===3){ S.mainQuestStage=4; S.permanentBonuses.itemCapBonus+=1; S.attributePoint+=2; addLog('🌟主线三完成：众志成城！道具上限+1 +2AP'); }else if(S.mainQuestStage===4){ S.mainQuestStage=5; S.skillPoint+=5; S.titles.push('滚木猎人'); addLog('🌟主线四完成：全面反击！+5SP 获得称号【滚木猎人】'); }}
+function checkMainQuest(){if(S.mainQuestStage===1&&S.spread>=30) advanceMainQuest();if(S.mainQuestStage===3&&S.angryPeople>=10) advanceMainQuest();if(S.mainQuestStage===4&&S.totalDmg>=800) advanceMainQuest();}
+function triggerSy(){S.sideQuestFlags.sy = true; S.permanentBonuses.spreadBonus += 20; S.permanentBonuses.dmgBonus += 10;if(!S.skills['i7']) { S.skills['i7'] = 1; addLog('🔓解锁Intelligence黄金技能：全图索敌'); }addLog('🚨 sy带你加入信息帮！传播+20% 伤害+10% 滚木发现："你们这群信息帮的，完蛋了！"');S.targeted = true; S.foundCount++; bossCounter();}
+function triggerLsy(){S.sideQuestFlags.lsy = true; S.spread = Math.min(100, S.spread+5); S.maxHp += 30;S.playerHp = Math.min(S.maxHp, S.playerHp+30); S.buffs.studyBuff = 2; S.attributePoint += 2; S.skillPoint += 2; grantExp(50);addLog('📚 学霸团(lsy,csn,hsx,wyj)加入！传播+5% 最大HP+30 低调2回合 +2AP +2SP +50EXP');}
+function triggerZqt(){S.sideQuestFlags.zqt = true; S.bossHp = Math.max(0, S.bossHp-200); S.totalDmg += 200;S.spread = Math.min(100, S.spread+10); if(!S.cards.zsy) S.cards.zsy = true;addLog('👩‍🏫 zqt老师看中你！赋予召唤校长权限，滚木-200HP 传播+10% 获得ZSY');}
+function triggerFbq(){S.sideQuestFlags.fbq = true; S.targeted = false; S.nailongBuff = 2;if(!S.items.includes('speaker') && S.items.length < S.maxItems) S.items.push('speaker');addLog('🎤 你的歌声打动了路过的fbq，它冲进来帮你吓退了滚木！获得扩音器，2回合安全');}
+const dailyTaskPool = [{id:'d1',desc:'传播度达20%',check:()=>S.spread>=20,reward:()=>grantExp(30)},{id:'d2',desc:'访问3个地点',check:()=>S._visitedToday>=3,reward:()=>{S.maxAp++;addLog('📜每日任务完成：AP上限+1')}},{id:'d3',desc:'使用1张变身卡',check:()=>S.cardUses>0,reward:()=>{const r=Math.random();if(r<0.3)S.items.push('recorder');else if(r<0.6)S.items.push('amulet');else S.items.push('handbook');addLog('📜每日任务完成：获得随机道具')}},{id:'d4',desc:'未被滚木发现',check:()=>S.dailyFoundCount===0,reward:()=>{S.skillPoint++;addLog('📜每日任务完成：+1SP')}},{id:'d5',desc:'对滚木造成100伤害',check:()=>S.totalDmg>=100,reward:()=>{S.attributePoint++;addLog('📜每日任务完成：+1AP')}},{id:'d6',desc:'好感度变化超±15',check:()=>Math.abs(S.affection)>=15,reward:()=>grantExp(50)}];
+function refreshDailyTasks(){const pool = [...dailyTaskPool]; S.dailyTasks = [];for(let i=0;i<3;i++){ const idx = Math.floor(Math.random()*pool.length); S.dailyTasks.push(pool.splice(idx,1)[0]); }S.dailyTaskDone = [false,false,false]; S._visitedToday = 0; S.dailyFoundCount = 0;}
+function renderTaskPanel(){const stages = ['','初露锋芒(传播30%)','证据确凿(报告德育处2次)','众志成城(愤怒10)','全面反击(累计800伤害)','终极审判(击败滚木)'];let html = `<div class="task-section"><b>📌 主线任务</b><div class="task-item">阶段${S.mainQuestStage}/5：${stages[S.mainQuestStage]}<span class="task-progress">${S.mainQuestStage===2?`报告次数 ${S.reportCount}/2`:''}${S.mainQuestStage===3?`愤怒 ${S.angryPeople}/10`:''}${S.mainQuestStage===4?`伤害 ${S.totalDmg}/800`:''}</span></div></div>`;html += `<div class="task-section"><b>📋 每日任务</b>${S.dailyTasks.map((t,i)=>`<div class="task-item">${t.desc} <span class="task-reward">${S.dailyTaskDone[i]?'✅已完成':'进行中'}</span></div>`).join('')}</div>`;html += `<div class="task-section"><b>🏆 支线成就</b><div class="task-item">${S.sideQuestFlags.sy?'✅':'⬜'} 信息帮(sy) ${S.sideQuestFlags.sy?'已触发':''}</div><div class="task-item">${S.sideQuestFlags.lsy?'✅':'⬜'} 学霸团(lsy等) ${S.sideQuestFlags.lsy?'已触发':''}</div><div class="task-item">${S.sideQuestFlags.zqt?'✅':'⬜'} zqt老师 ${S.sideQuestFlags.zqt?'已触发':''}</div><div class="task-item">${S.sideQuestFlags.fbq?'✅':'⬜'} fbq ${S.sideQuestFlags.fbq?'已触发':''}</div></div>`;document.getElementById('taskContent').innerHTML = html;}
+document.getElementById('openSkillBtn').addEventListener('click', openSkillTree);
+document.getElementById('closeSkillBtn').addEventListener('click', closeSkillTree);
+document.getElementById('openTaskBtn').addEventListener('click', ()=>{ renderTaskPanel(); document.getElementById('taskOverlay').style.display='flex'; });
+document.getElementById('taskOverlay').addEventListener('click', (e)=>{ if(e.target === document.getElementById('taskOverlay')) document.getElementById('taskOverlay').style.display='none'; });
+document.getElementById('endDayBtn').addEventListener('click', endDay);
+document.getElementById('restartBtn').addEventListener('click', restartGame);
+document.addEventListener('keydown',e=>{if(S.gameOver)return;const btns=document.querySelectorAll('.action-btn:not(:disabled)');if(e.key>='1'&&e.key<='4'&&btns[parseInt(e.key)-1])btns[parseInt(e.key)-1].click();if(e.key==='e'||e.key==='E')endDay();if(e.key==='z'||e.key==='Z')useZSY();});
+let bossClickCount=0;
+setTimeout(()=>{const bossBar=document.getElementById('bossHpBar');if(bossBar&&bossBar.parentElement&&bossBar.parentElement.parentElement){bossBar.parentElement.parentElement.addEventListener('click',()=>{bossClickCount++;if(bossClickCount>=10){addLog('👹 滚木："哼，你点够了吗？"','warn');bossClickCount=0}});}},200);
+loadSkillData();if(S.skillPoint === 0 && S.playerLevel === 1) S.skillPoint = 3;updateBossMaxHp();applySkillEffects();refreshDailyTasks();syncSkillUI();updateUI();
+</script>
+</body>
+</html>
