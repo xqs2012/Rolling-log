@@ -147,7 +147,6 @@
         .skill-branch-title{font-size:.9em;color:#f0e7ff;margin-bottom:8px;font-weight:bold}
         .skill-branch-desc{font-size:.7em;color:#9d9db8;margin-bottom:10px}
         .skill-graph{display:grid;gap:10px}
-        /* 可视化技能树连线 */
         .skill-node{min-width:150px;max-width:210px;flex:1;background:linear-gradient(180deg,#171726 0%,#10101a 100%);border:1px solid #343454;border-radius:12px;padding:10px;position:relative;margin-bottom: 24px;}
         .skill-node:not(:last-child)::after { content:'⬇'; position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); color:#7e63ff; font-size:18px; z-index:1;}
         .skill-node:last-child { margin-bottom: 0; }
@@ -166,6 +165,29 @@
         .skill-badge.perk{border-color:#745cff;color:#d9ccff}
         .skill-badge.gold{border-color:#ffb000;color:#ffd67c}
         .from-xqs{text-align:center;font-size:0.6em;color:#666;margin-top:10px;letter-spacing:1px}
+        .task-btn{padding:8px 12px;border-radius:10px;border:1px solid #6a6a4a;background:linear-gradient(135deg,#2a2a1f 0%,#1a1a0f 100%);color:#ffd700;cursor:pointer;font-size:.8em;font-weight:bold;margin-left:8px}
+        .task-overlay{position:fixed;inset:0;z-index:220;background:rgba(0,0,0,.88);display:flex;justify-content:center;align-items:center;padding:12px}
+        .task-window{width:min(700px,100%);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);border:1px solid #aa8c4a;border-radius:18px;padding:18px;color:#ddd}
+        .task-section{margin-bottom:16px;border-bottom:1px solid #333;padding-bottom:12px}
+        .task-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin:4px 0;font-size:0.8em}
+        .task-reward{color:#ffd700;font-size:0.7em}
+        .task-progress{color:#88ccff;font-size:0.7em}
+        .ending-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;padding:15px}
+        .ending-box{max-width:600px;width:100%;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);border:2px solid #ffaa00;border-radius:20px;padding:30px;text-align:center;color:#ddd;animation:fadeIn 1s}
+        .ending-box h1{color:#ffaa00;font-size:1.8em;margin-bottom:15px}
+        .ending-box .ending-text{line-height:2;font-size:0.9em;color:#ccc;margin-bottom:20px;min-height:200px}
+        .ending-box .ending-reward{color:#ffd700;font-size:0.85em;margin-bottom:20px}
+        .ending-choice-btn{padding:12px 24px;margin:8px;font-size:0.95em;font-family:inherit;border-radius:25px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555}
+        .ending-choice-btn:hover{border-color:#ffaa00;color:#ffaa00;box-shadow:0 0 20px rgba(255,170,0,0.3)}
+        .dlc-page{position:fixed;inset:0;z-index:700;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);display:flex;flex-direction:column;align-items:center;padding:20px;overflow-y:auto}
+        .dlc-page h1{color:#cc88ff;font-size:1.8em;margin:20px 0;text-align:center}
+        .dlc-page .dlc-chapter-name{color:#888;font-size:1em;margin-bottom:20px;text-align:center}
+        .dlc-page .dlc-content{max-width:650px;width:100%;line-height:2.2;font-size:0.95em;color:#ccc;white-space:pre-wrap;margin-bottom:20px}
+        .dlc-page .dlc-buttons{display:flex;flex-direction:column;gap:10px;max-width:400px;width:100%}
+        .dlc-page button{padding:12px 20px;font-size:0.9em;font-family:inherit;border-radius:20px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555;text-align:left}
+        .dlc-page button:hover{border-color:#cc88ff;color:#cc88ff;box-shadow:0 0 15px rgba(136,68,204,0.3)}
+        .dlc-page .dlc-back-btn{position:absolute;top:15px;left:15px;padding:8px 16px;font-size:0.8em;font-family:inherit;border-radius:15px;cursor:pointer;background:transparent;color:#888;border:1px solid #444}
+        .dlc-page .dlc-back-btn:hover{color:#fff;border-color:#fff}
         .nickname-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:16px 0 8px}
         .nickname-row label{font-size:0.85em;color:#ddd}
         .nickname-input{width:min(320px,100%);padding:10px 12px;border-radius:12px;border:1px solid #555;background:rgba(0,0,0,0.35);color:#fff;font-family:inherit;outline:none}
@@ -208,31 +230,7 @@
         .admin-note{font-size:0.78em;color:#bba8ff;margin-top:8px;line-height:1.5}
         .start-leaderboard-wrap{margin-top:14px}
         .start-leaderboard-wrap .leaderboard-title{margin-bottom:10px}
-
         .billboard{margin-top:12px;padding:12px;border:1px solid #885533;border-radius:14px;background:rgba(255,150,0,0.08);color:#ffd7a6;line-height:1.75;font-size:0.86em}
-        .task-btn{padding:8px 12px;border-radius:10px;border:1px solid #6a6a4a;background:linear-gradient(135deg,#2a2a1f 0%,#1a1a0f 100%);color:#ffd700;cursor:pointer;font-size:.8em;font-weight:bold;margin-left:8px}
-        .task-overlay{position:fixed;inset:0;z-index:220;background:rgba(0,0,0,.88);display:flex;justify-content:center;align-items:center;padding:12px}
-        .task-window{width:min(700px,100%);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);border:1px solid #aa8c4a;border-radius:18px;padding:18px;color:#ddd}
-        .task-section{margin-bottom:16px;border-bottom:1px solid #333;padding-bottom:12px}
-        .task-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin:4px 0;font-size:0.8em}
-        .task-reward{color:#ffd700;font-size:0.7em}
-        .task-progress{color:#88ccff;font-size:0.7em}
-        .ending-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;padding:15px}
-        .ending-box{max-width:600px;width:100%;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);border:2px solid #ffaa00;border-radius:20px;padding:30px;text-align:center;color:#ddd;animation:fadeIn 1s}
-        .ending-box h1{color:#ffaa00;font-size:1.8em;margin-bottom:15px}
-        .ending-box .ending-text{line-height:2;font-size:0.9em;color:#ccc;margin-bottom:20px;min-height:200px}
-        .ending-box .ending-reward{color:#ffd700;font-size:0.85em;margin-bottom:20px}
-        .ending-choice-btn{padding:12px 24px;margin:8px;font-size:0.95em;font-family:inherit;border-radius:25px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555}
-        .ending-choice-btn:hover{border-color:#ffaa00;color:#ffaa00;box-shadow:0 0 20px rgba(255,170,0,0.3)}
-        .dlc-page{position:fixed;inset:0;z-index:700;background:linear-gradient(180deg,#0a0a0a 0%,#1a1025 100%);display:flex;flex-direction:column;align-items:center;padding:20px;overflow-y:auto}
-        .dlc-page h1{color:#cc88ff;font-size:1.8em;margin:20px 0;text-align:center}
-        .dlc-page .dlc-chapter-name{color:#888;font-size:1em;margin-bottom:20px;text-align:center}
-        .dlc-page .dlc-content{max-width:650px;width:100%;line-height:2.2;font-size:0.95em;color:#ccc;white-space:pre-wrap;margin-bottom:20px}
-        .dlc-page .dlc-buttons{display:flex;flex-direction:column;gap:10px;max-width:400px;width:100%}
-        .dlc-page button{padding:12px 20px;font-size:0.9em;font-family:inherit;border-radius:20px;cursor:pointer;transition:all 0.3s;background:transparent;color:#ddd;border:1px solid #555;text-align:left}
-        .dlc-page button:hover{border-color:#cc88ff;color:#cc88ff;box-shadow:0 0 15px rgba(136,68,204,0.3)}
-        .dlc-page .dlc-back-btn{position:absolute;top:15px;left:15px;padding:8px 16px;font-size:0.8em;font-family:inherit;border-radius:15px;cursor:pointer;background:transparent;color:#888;border:1px solid #444}
-        .dlc-page .dlc-back-btn:hover{color:#fff;border-color:#fff}
     </style>
 </head>
 <body>
@@ -254,7 +252,7 @@
       <p>· 好感度达到100%触发"歌剧魅影"（失败）。</p>
       <p>· 生命值归零或超过61天未击败滚木，游戏失败。</p>
       <p>. 更新日志：</p>
-      <p>. 2026.6.29 加强了滚木并添加了昵称（建议以真实名字缩写输入，比较好统计），排行榜，彩蛋（提示：晚风一吹就让你想起了你的前任（@wyj）你应该猜的到彩蛋是什么，是关于昵称的，等。
+      <p>. 2026.6.30 增加创可贴掉落；支线奖励创可贴；排行榜全局同步。</p>
     </div>
     <div class="nickname-row">
       <label for="nicknameInput">昵称</label>
@@ -356,6 +354,124 @@
 <div class="overlay" id="overlay" style="display:none;"><div class="overlay-box" id="overlayBox"><h2 id="overlayTitle"></h2><p id="overlayText"></p><div class="stats" id="overlayStats"></div><div class="leaderboard-box" id="leaderboardBox" style="display:none;"></div><div class="lose-quote" id="loseQuote" style="display:none;"></div><button class="restart-btn" id="restartBtn">🔄 重新挑战</button></div></div>
 
 <script>
+// ==================== 全局排行榜同步 ====================
+const JSONBIN_BIN_ID = ''; // 填入你的 JSONBin Bin ID (例如: 6123456789abcdef)
+const JSONBIN_API_KEY = ''; // 可选的 API Key (如果需要私有访问)
+
+async function syncLeaderboardToCloud(data) {
+    if (!JSONBIN_BIN_ID) return false; // 未配置则不同步
+    try {
+        const url = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': JSONBIN_API_KEY || '$2b$10$YQ...' // 公共默认key，请替换为自己的
+            },
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            console.log('排行榜已同步到云端');
+            return true;
+        }
+    } catch (e) {
+        console.warn('云端同步失败，使用本地数据', e);
+    }
+    return false;
+}
+
+async function loadLeaderboardFromCloud() {
+    if (!JSONBIN_BIN_ID) return null;
+    try {
+        const url = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`;
+        const res = await fetch(url, {
+            headers: {
+                'X-Master-Key': JSONBIN_API_KEY || '$2b$10$YQ...'
+            }
+        });
+        if (res.ok) {
+            const json = await res.json();
+            return json.record;
+        }
+    } catch (e) {
+        console.warn('从云端加载排行榜失败', e);
+    }
+    return null;
+}
+
+// 增强版排行渲染：支持异步加载云端数据
+async function renderGlobalLeaderboard(boxId, withSuggestion = false) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+
+    // 先显示本地数据
+    let data = normalizeRankings(loadRankings());
+    // 尝试加载云端数据
+    const cloudData = await loadLeaderboardFromCloud();
+    if (cloudData) {
+        // 合并云端与本地（云端优先）
+        const merged = {
+            fastest: dedupeAndSortRanking(
+                [...(cloudData.fastest || []), ...(loadRankings().fastest || [])],
+                'fastest'
+            ),
+            through: dedupeAndSortRanking(
+                [...(cloudData.through || []), ...(loadRankings().through || [])],
+                'through'
+            )
+        };
+        data = normalizeRankings(merged);
+        // 同时更新本地存储
+        saveRankings(data);
+    }
+
+    renderRankingsContent(box, data, withSuggestion);
+}
+
+function renderRankingsContent(box, data, withSuggestion) {
+    const suggestions = loadSuggestions();
+    const adminActive = isAdminUnlocked();
+    const renderList = (list, label) => {
+        if (!list || list.length === 0) return `<div class="leaderboard-section"><h4>${label}</h4><div class="leaderboard-list">暂无记录</div></div>`;
+        return `<div class="leaderboard-section"><h4>${label}</h4><div class="leaderboard-list">${list.map((r, i) => `<div class="leaderboard-item"><span class="leaderboard-name">${i+1}. ${escapeHtml(r.name)}</span><span class="leaderboard-days">${r.days} 天</span></div>`).join('')}</div></div>`;
+    };
+    const suggestionHtml = withSuggestion ? `
+        <div class="billboard">
+            <strong>给 xqs 留言</strong><br>
+            你们的建议将成为我更新换代的动力，请留下你们的建议，我会参考你们的意见。如果你觉得还不够，可以添加 V：15302251202，给出资助金，谢谢。
+        </div>
+        <div class="suggestion-box">
+            <h4>留下建议</h4>
+            <textarea id="suggestionInput" class="suggestion-input" maxlength="240" placeholder="在这里输入你的建议，越具体越好..."></textarea>
+            <div class="suggestion-actions">
+                <button class="suggestion-btn" onclick="submitSuggestion()">提交建议</button>
+                <span class="suggestion-note">刷新后仍会保留在本地；只有管理员登录后才能查看收件箱。</span>
+            </div>
+            ${adminActive ? `
+            <div class="admin-panel">
+                <h4>收件箱（仅管理员可见）</h4>
+                <div class="suggestion-list">
+                    ${suggestions.length ? suggestions.slice(0,10).map(s => `<div class="suggestion-item"><strong>${escapeHtml(s.name)}</strong> → <strong>${escapeHtml(s.recipient || 'xqs')}</strong> · ${escapeHtml(s.date)}<br>${escapeHtml(s.text)}</div>`).join('') : '<div class="suggestion-item">暂无建议，欢迎先写第一条。</div>'}
+                </div>
+                <div class="admin-note">管理员按钮：可在这里重置所有数据。</div>
+                <button class="admin-reset-btn" onclick="resetAllData()">🧹 重置所有数据</button>
+            </div>` : `
+            <div class="admin-note">建议已提交，收件箱只对管理员开放。</div>`}
+        </div>
+    ` : '';
+    box.innerHTML = `
+        <div class="leaderboard-title">🏆 排行榜</div>
+        ${renderList(data.fastest, '最快通过榜')}
+        ${renderList(data.through, '通过榜')}
+        ${suggestionHtml}
+    `;
+}
+
+// 修改原有的renderRankings，改为调用异步版本
+function renderRankings(boxId, withSuggestion = false) {
+    renderGlobalLeaderboard(boxId, withSuggestion);
+}
+
 // ==================== Toast 弹框 ====================
 function showToast(msg) {
     const existing = document.querySelector('.toast');
@@ -367,164 +483,102 @@ function showToast(msg) {
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
 }
 
-
 function escapeHtml(str){
-  return String(str ?? '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
+    return String(str ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
 }
 
-// 可选：如果你有自己的后端接口，填入这里即可。
-// 留空时仍然会使用 localStorage，刷新不会丢。
-const REMOTE_SYNC_URL = '';
 const ADMIN_NICKNAME = 'xqsLhyl';
 const ADMIN_PASSWORD = 'xqsLhyl1314';
 
 function isAdminUnlocked(){
-  return S.isAdmin || sessionStorage.getItem('rollwood_admin_verified') === '1';
+    return S.isAdmin || sessionStorage.getItem('rollwood_admin_verified') === '1';
 }
 function loadRankings(){
-  try{
-    return JSON.parse(localStorage.getItem('rollwood_rankings') || '{"fastest":[],"through":[]}') || {fastest:[],through:[]};
-  }catch(e){
-    return {fastest:[], through:[]};
-  }
+    try{
+        return JSON.parse(localStorage.getItem('rollwood_rankings') || '{"fastest":[],"through":[]}') || {fastest:[],through:[]};
+    }catch(e){
+        return {fastest:[], through:[]};
+    }
 }
 function rankingBetter(a, b, kind){
-  if(!b) return true;
-  const ad = Number(a?.days ?? 0);
-  const bd = Number(b?.days ?? 0);
-  if(kind === 'fastest') return ad < bd || (ad === bd && String(a.date||'') < String(b.date||''));
-  return ad > bd || (ad === bd && String(a.date||'') < String(b.date||''));
+    if(!b) return true;
+    const ad = Number(a?.days ?? 0);
+    const bd = Number(b?.days ?? 0);
+    if(kind === 'fastest') return ad < bd || (ad === bd && String(a.date||'') < String(b.date||''));
+    return ad > bd || (ad === bd && String(a.date||'') < String(b.date||''));
 }
 function dedupeAndSortRanking(list, kind){
-  const map = new Map();
-  (Array.isArray(list) ? list : []).forEach(item => {
-    const name = String(item?.name ?? '匿名').trim() || '匿名';
-    const row = { name, days: Math.max(1, Number(item?.days ?? 1)), date: String(item?.date ?? '') };
-    const old = map.get(name);
-    if(!old || rankingBetter(row, old, kind)) map.set(name, row);
-  });
-  const arr = [...map.values()];
-  arr.sort((a, b) => kind === 'fastest'
-    ? (a.days - b.days || a.name.localeCompare(b.name, 'zh-Hans-CN') || String(a.date||'').localeCompare(String(b.date||'')))
-    : (b.days - a.days || a.name.localeCompare(b.name, 'zh-Hans-CN') || String(a.date||'').localeCompare(String(b.date||'')))
-  );
-  return arr.slice(0, 10);
+    const map = new Map();
+    (Array.isArray(list) ? list : []).forEach(item => {
+        const name = String(item?.name ?? '匿名').trim() || '匿名';
+        const row = { name, days: Math.max(1, Number(item?.days ?? 1)), date: String(item?.date ?? '') };
+        const old = map.get(name);
+        if(!old || rankingBetter(row, old, kind)) map.set(name, row);
+    });
+    const arr = [...map.values()];
+    arr.sort((a, b) => kind === 'fastest'
+        ? (a.days - b.days || a.name.localeCompare(b.name, 'zh-Hans-CN') || String(a.date||'').localeCompare(String(b.date||'')))
+        : (b.days - a.days || a.name.localeCompare(b.name, 'zh-Hans-CN') || String(a.date||'').localeCompare(String(b.date||'')))
+    );
+    return arr.slice(0, 10);
 }
 function normalizeRankings(data){
-  return {
-    fastest: dedupeAndSortRanking(data?.fastest || [], 'fastest'),
-    through: dedupeAndSortRanking(data?.through || [], 'through')
-  };
+    return {
+        fastest: dedupeAndSortRanking(data?.fastest || [], 'fastest'),
+        through: dedupeAndSortRanking(data?.through || [], 'through')
+    };
 }
 function saveRankings(data){
-  localStorage.setItem('rollwood_rankings', JSON.stringify(normalizeRankings(data)));
+    localStorage.setItem('rollwood_rankings', JSON.stringify(normalizeRankings(data)));
+    // 同时尝试同步云端
+    syncLeaderboardToCloud(normalizeRankings(data));
 }
 function loadSuggestions(){
-  try{
-    return JSON.parse(localStorage.getItem('rollwood_suggestions') || '[]') || [];
-  }catch(e){
-    return [];
-  }
+    try{
+        return JSON.parse(localStorage.getItem('rollwood_suggestions') || '[]') || [];
+    }catch(e){
+        return [];
+    }
 }
 function saveSuggestions(list){
-  localStorage.setItem('rollwood_suggestions', JSON.stringify(list));
-}
-async function syncToRemote(){
-  if(!REMOTE_SYNC_URL) return;
-  try{
-    await fetch(REMOTE_SYNC_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        rankings: normalizeRankings(loadRankings()),
-        suggestions: loadSuggestions(),
-        updatedAt: new Date().toISOString()
-      })
-    });
-  }catch(e){}
-}
-function queueSync(){
-  syncToRemote();
+    localStorage.setItem('rollwood_suggestions', JSON.stringify(list));
 }
 function submitSuggestion(){
-  const input = document.getElementById('suggestionInput');
-  if(!input) return;
-  const text = (input.value || '').trim();
-  if(!text){
-    showToast('请输入建议内容');
-    return;
-  }
-  const list = loadSuggestions();
-  list.unshift({
-    text,
-    name: S.playerName || '匿名',
-    recipient: 'xqs',
-    date: new Date().toISOString().slice(0,10)
-  });
-  saveSuggestions(list.slice(0, 50));
-  input.value = '';
-  renderRankings('leaderboardBox', true);
-  renderRankings('startLeaderboardBox', false);
-  queueSync();
-  showToast('建议已提交');
+    const input = document.getElementById('suggestionInput');
+    if(!input) return;
+    const text = (input.value || '').trim();
+    if(!text){
+        showToast('请输入建议内容');
+        return;
+    }
+    const list = loadSuggestions();
+    list.unshift({
+        text,
+        name: S.playerName || '匿名',
+        recipient: 'xqs',
+        date: new Date().toISOString().slice(0,10)
+    });
+    saveSuggestions(list.slice(0, 50));
+    input.value = '';
+    renderRankings('leaderboardBox', true);
+    renderRankings('startLeaderboardBox', false);
+    showToast('建议已提交');
 }
 function recordWinRankings(){
-  const data = loadRankings();
-  const name = S.playerName || '匿名';
-  const days = Math.max(1, S.day);
-  const score = { name, days, date: new Date().toISOString().slice(0,10) };
-  data.fastest.push(score);
-  data.through.push(score);
-  saveRankings(data);
-  queueSync();
+    const data = loadRankings();
+    const name = S.playerName || '匿名';
+    const days = Math.max(1, S.day);
+    const score = { name, days, date: new Date().toISOString().slice(0,10) };
+    data.fastest.push(score);
+    data.through.push(score);
+    saveRankings(data);
 }
-function renderRankings(boxId='leaderboardBox', withSuggestion=false){
-  const box = document.getElementById(boxId);
-  if(!box) return;
-  const data = normalizeRankings(loadRankings());
-  const suggestions = loadSuggestions();
-  const adminActive = isAdminUnlocked();
-  const renderList = (list, label) => {
-    if(!list || list.length===0) return `<div class="leaderboard-section"><h4>${label}</h4><div class="leaderboard-list">暂无记录</div></div>`;
-    return `<div class="leaderboard-section"><h4>${label}</h4><div class="leaderboard-list">${list.map((r, i) => `<div class="leaderboard-item"><span class="leaderboard-name">${i+1}. ${escapeHtml(r.name)}</span><span class="leaderboard-days">${r.days} 天</span></div>`).join('')}</div></div>`;
-  };
-  const suggestionHtml = withSuggestion ? `
-    <div class="billboard">
-      <strong>给 xqs 留言</strong><br>
-      你们的建议将成为我更新换代的动力，请留下你们的建议，我会参考你们的意见。如果你觉得还不够，可以添加 V：15302251202，给出资助金，谢谢。
-    </div>
-    <div class="suggestion-box">
-      <h4>留下建议</h4>
-      <textarea id="suggestionInput" class="suggestion-input" maxlength="240" placeholder="在这里输入你的建议，越具体越好..."></textarea>
-      <div class="suggestion-actions">
-        <button class="suggestion-btn" onclick="submitSuggestion()">提交建议</button>
-        <span class="suggestion-note">刷新后仍会保留在本地；只有管理员登录后才能查看收件箱。</span>
-      </div>
-      ${adminActive ? `
-      <div class="admin-panel">
-        <h4>收件箱（仅管理员可见）</h4>
-        <div class="suggestion-list">
-          ${suggestions.length ? suggestions.slice(0,10).map(s => `<div class="suggestion-item"><strong>${escapeHtml(s.name)}</strong> → <strong>${escapeHtml(s.recipient || 'xqs')}</strong> · ${escapeHtml(s.date)}<br>${escapeHtml(s.text)}</div>`).join('') : '<div class="suggestion-item">暂无建议，欢迎先写第一条。</div>'}
-        </div>
-        <div class="admin-note">管理员按钮：可在这里重置所有数据。</div>
-        <button class="admin-reset-btn" onclick="resetAllData()">🧹 重置所有数据</button>
-      </div>` : `
-      <div class="admin-note">建议已提交，收件箱只对管理员开放。</div>`}
-    </div>
-  ` : '';
-  box.innerHTML = `
-    <div class="leaderboard-title">🏆 排行榜</div>
-    ${renderList(data.fastest, '最快通过榜')}
-    ${renderList(data.through, '通过榜')}
-    ${suggestionHtml}
-  `;
-  box.style.display = 'block';
-}
+
 // ==================== DLC 系统 ====================
 const DLC = {
   chapter: 0, scene: 0,
@@ -645,7 +699,6 @@ function renderDLCScene() {
   }
 }
 
-
 function openAdminPasswordGate(){
   const overlay = document.getElementById('adminPasswordOverlay');
   const input = document.getElementById('adminPasswordInput');
@@ -723,11 +776,9 @@ const S = {
   ngPlusLevel:0, ngEnding:'',
   parentCallCooldown: 0,
   bossResilience: 0,
-  bossLayers: 0, // 新增：滚木的执念层数
-  // 原有: 记录但修改机制为削弱坚韧
+  bossLayers: 0,
   resistPower: 0,
   lastResistDmg: 0,
-  // 新增核心状态：
   bossMood: 'normal',
   moodKnown: false,
   evidenceValue: 0,
@@ -800,15 +851,10 @@ function canLearnSkill(skill){
     if(S.skillPoint<=0) return false; 
     const key=skillTreeKeyById(skill.id); 
     if(S.attributes[key] < skill.req) return false; 
-    
-    // 分支抉择锁
     if(skill.id === 'b1' && skillLevel('i1') > 0) return false;
     if(skill.id === 'i1' && skillLevel('b1') > 0) return false;
-    
-    // 终极技能任务化
     if(skill.id === 'b8' && S.dzzUses < 5) return false;
     if(skill.id === 'r3' && S.sideQuestsTriggered < 3) return false;
-    
     return true; 
 }
 function learnSkill(id){ const sk=getSkillById(id); if(!sk) return; const key=skillTreeKeyById(id); if(!key) return; if(S.skillPoint<=0) return addLog('⭐ 技能点不足','warn'); if(S.attributes[key] < sk.req) return addLog('🔒 属性不足','warn'); if(skillLevel(id)>=sk.max) return; if(!canLearnSkill(sk)) return addLog('🔒 前置条件未满足或分支被锁定','warn'); S.skillPoint--; S.skills[id] = (S.skills[id]||0)+1; applySkillEffects(); addLog(`⭐ 学习技能【${sk.name}】 Lv${S.skills[id]}`,'card'); syncSkillUI(); renderSkillTree(); updateUI(); }
@@ -827,8 +873,6 @@ function applySkillEffects(){
     } 
     S._skillEffects = e; 
     if(e.itemCap) S.maxItems = 3 + e.itemCap; 
-    
-    // 属性专精奖励
     S.buffs.bodyPassive = (S.attributes.body >= 15);
     S.buffs.intPassive = (S.attributes.intelligence >= 15);
     S.buffs.coolPassive = (S.attributes.cool >= 15);
@@ -863,25 +907,17 @@ function applyPlayerDamage(dmg, source=''){
     return dmg;
 }
 
-// ==================== 绝望级滚木伤害判定核心 ====================
 function applyDamageToBoss(rawDamage) {
     if (S.bossHp <= 0 || S.gameOver) return 0;
-
     let damage = rawDamage;
     let bossLayers = S.bossLayers || 0; 
-
-    // 1. 层数减伤 (每层减15%，最高75%)
     let reduction = Math.min(0.75, bossLayers * 0.15);
     damage = damage * (1 - reduction);
-
-    // 2. 单次伤害锁上限 (不能超过生命上限的 10%)
     let damageCap = S.bossMaxHp * 0.1;
     if (damage > damageCap) {
         damage = damageCap;
         addLog('👹 “校规庇护”生效：无视了超出上限的高额伤害！', 'warn');
     }
-
-    // 3. 多阶段锁血
     let nextHp = S.bossHp - damage;
     if (S.bossHp > S.bossMaxHp * 0.7 && nextHp <= S.bossMaxHp * 0.7) {
         damage = S.bossHp - S.bossMaxHp * 0.7;
@@ -891,8 +927,6 @@ function applyDamageToBoss(rawDamage) {
         damage = S.bossHp - S.bossMaxHp * 0.3;
         addLog('👹 滚木进入【阶段3：困兽犹斗】，绝对防御开启！', 'warn');
     }
-
-    // 4. 双数层数规则反噬 (伤害反弹)
     if (bossLayers > 0 && bossLayers % 2 === 0) {
         let rebound = Math.floor(damage * 0.25);
         if(rebound > 0) {
@@ -903,23 +937,18 @@ function applyDamageToBoss(rawDamage) {
             }
         }
     }
-
     damage = Math.floor(damage);
     if (damage > 0) {
         S.bossHp = Math.max(0, S.bossHp - damage);
         S.totalDmg += damage;
-        grantExp(damage); // 统合处理EXP和总伤害统计
+        grantExp(damage);
     }
-    
-    // 5. 挨打增加执念层数
     if (Math.random() < 0.5) {
         S.bossLayers = (S.bossLayers || 0) + 1;
         addLog(`👹 滚木的执念加深！（当前层数: ${S.bossLayers}）`, 'warn');
     }
-    
     return damage;
 }
-
 
 const courses={1:['语文课','揭露恶行效果+20%'],2:['数学课','行动成功率+10%'],3:['体育课','移动不消耗AP'],4:['音乐课','魅惑成功率+20%'],5:['自习课','AP+1'],6:['班会课','揭露恶行效果翻倍'],0:['无课','无特殊效果']};
 function getWeekEffect(d){const w=d%7;if(w===1)return['周一滚木活跃',10];if(w===3)return['周三德育处巡查',50];if(w===5)return['周五滚木心情好',-20];return['平日',0];}
@@ -931,8 +960,6 @@ function getBossAtk(){
     else if(S.bossHp<500) atk = bossAtks[Math.random()<0.5?4:5];
     else if(S.bossHp<800) atk = bossAtks[Math.floor(Math.random()*3)+1];
     else atk = bossAtks[0];
-    
-    // 返回带修正的副本，应用情绪波动
     let modAtk = Object.assign({}, atk);
     if(S.bossMood === 'happy'){ modAtk.min = Math.floor(modAtk.min * 0.7); modAtk.max = Math.floor(modAtk.max * 0.7); }
     if(S.bossMood === 'angry'){ modAtk.min = Math.floor(modAtk.min * 1.3); modAtk.max = Math.floor(modAtk.max * 1.3); }
@@ -958,7 +985,7 @@ const locations={
     classroom:{name:'教室',icon:'🏫',events:[
         {id:'expose',name:'📢 揭露恶行',ap:3,desc:'向全班揭露滚木的所作所为',flavor:'同学们议论纷纷...',eff:{spread:15,angry:1,aff:-10,log:'揭露恶行！传播+15%，愤怒+1'},found:35},
         {id:'resist',name:'⚔️ 开始反抗',ap:2,desc:'正面反抗滚木',flavor:'这是一场持久的斗争...',eff:{atkProg:25,log:'反抗进度+25%'},isAtk:true,found:30,cond:()=>!S.isAttacking},
-        {id:'study',name:'📝 认真听课',ap:1,desc:'专心听讲，降低存在感',flavor:'滚木没注意到你...',eff:{log:'认真听课，被发现概率降低'},found:10,onUse:()=>{S.buffs.studyBuff=2;tryTriggerSideQuest('zqt');}},
+        {id:'study',name:'📝 认真听课',ap:1,desc:'专心听讲，降低存在感',flavor:'滚木没注意到你...',eff:{log:'认真听课，被发现概率降低'},found:10,onUse:()=>{S.buffs.studyBuff=2;if(Math.random()<0.2 && S.items.length < S.maxItems){S.items.push('bandaid');addLog('📝 认真听课中发现了创可贴！','heal');}tryTriggerSideQuest('zqt');}},
         {id:'rally',name:'🤝 拉拢同学',ap:3,desc:'联合更多同学对抗滚木',flavor:'越来越多人站在你这边！',eff:{spread:10,angry:2,log:'拉拢同学！传播+10%，愤怒+2'},found:25,onUse:()=>{tryTriggerSideQuest('lsy');}}
     ]},
     hallway:{name:'走廊',icon:'🚪',events:[
@@ -979,7 +1006,7 @@ const locations={
         {id:'writeLetter',name:'📝 写举报信',ap:2,desc:'写一封详细的举报信',flavor:'这封信将送到校长办公室',eff:{spread:10,angry:1,log:'写举报信！传播+10%，愤怒+1'},found:15}
     ]},
     rooftop:{name:'天台',icon:'🏙️',events:[
-        {id:'gaze',name:'🌅 眺望远方',ap:1,desc:'放松心情，恢复体力',flavor:'微风拂面，心情平静了些',eff:{log:'眺望远方，HP+5'},found:5,onUse:()=>{S.playerHp=Math.min(S.maxHp,S.playerHp+5);S.pressure = Math.max(0, S.pressure - 20);addLog('🌅 HP+5，压力-20','heal')}},
+        {id:'gaze',name:'🌅 眺望远方',ap:1,desc:'放松心情，恢复体力',flavor:'微风拂面，心情平静了些',eff:{log:'眺望远方，HP+5'},found:5,onUse:()=>{S.playerHp=Math.min(S.maxHp,S.playerHp+5);S.pressure = Math.max(0, S.pressure - 20);if(Math.random()<0.15 && S.items.length < S.maxItems){S.items.push('bandaid');addLog('🌅 眺望时捡到了创可贴！','heal');}addLog('🌅 HP+5，压力-20','heal')}},
         {id:'shout',name:'📣 对全校喊话',ap:3,desc:'在天台向全校揭露滚木',flavor:'全校都听到了！',eff:{spread:25,log:'对全校喊话！传播+25%'},found:50},
         {id:'think',name:'🤔 思考对策',ap:2,desc:'冷静思考下一步计划',flavor:'你想到了新的策略...',eff:{log:'思考对策，下回合行动成功率+30%'},found:5,onUse:()=>{S.buffs.thinkBuff=true;S.pressure = Math.max(0, S.pressure - 30);addLog('🧠 思考对策，压力-30','heal')}}
     ]}
@@ -992,7 +1019,12 @@ function checkItemDrop(){
     if(S.location==='rooftop'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('amulet')){S.items.push('amulet');addLog('🛡️ 获得护身符！','card');}
     if(S.location==='classroom'&&Math.random()<0.1&&S.items.length<S.maxItems&&!S.items.includes('handbook')){S.items.push('handbook');addLog('📘 获得校规手册！','card');}
     if(S.location==='hallway'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('speaker')){S.items.push('speaker');addLog('🎤 获得扩音器！','card');}
-    if(S.affection>=50&&Math.random()<0.15&&S.items.length<S.maxItems&&!S.items.includes('bandaid')){S.items.push('bandaid');addLog('💊 获得创可贴！','card');}
+    // 创可贴掉落增加
+    if(S.affection>=50 && Math.random()<0.3 && S.items.length<S.maxItems && !S.items.includes('bandaid')){
+        S.items.push('bandaid');addLog('💊 好感度较高，获得了创可贴！','heal');
+    } else if(S.affection>=30 && Math.random()<0.15 && S.items.length<S.maxItems && !S.items.includes('bandaid')){
+        S.items.push('bandaid');addLog('💊 获得创可贴！','heal');
+    }
     checkCrafting();
 }
 function checkCrafting(){
@@ -1014,14 +1046,11 @@ function checkFound(baseChance){
     let chance = baseChance;
     if(S.location === 'classroom') chance += 10;
     if(S.location === 'hallway') chance *= 2; 
-    
     if(S.buffs.studyBuff>0)chance=Math.floor(chance/2);
     if(S.weather==='雨天')chance-=10;
     if(S.affection>=30)chance-=5;
     if(S.spread>60)chance-=15;
-    
     chance = Math.max(0, chance - (S._skillEffects.foundCut||0));
-    
     if(Math.random()*100<chance){
         if(S.buffs.recorder){S.buffs.recorder=false;addLog('📱 录音笔抵消了被发现！','heal');S.foundCount++;return false;}
         S.foundCount++;S.dailyFoundCount++;S.pressure = Math.min(S.maxPressure, S.pressure + 3);
@@ -1035,11 +1064,9 @@ function bossCounter(){
     if(S.legalShields > 0){ S.legalShields--; addLog('🛡️ 法律护盾抵消了攻击！','heal'); grantExp(10); return; }
     if(S.buffs.amulet){S.buffs.amulet=false;addLog('🛡️ 护身符抵消了攻击！','heal'); grantExp(10); return;}
     if(S.buffs.dududuShield){S.buffs.dududuShield=false;addLog('🎵 dududu护盾抵消了攻击！','heal'); grantExp(10); return;}
-    
     const atk=getBossAtk();let dmg=Math.floor(Math.random()*(atk.max-atk.min+1))+atk.min;
     if(S.bossHp<200)dmg=Math.floor(dmg*1.6);if(S.day===9)dmg*=2;const weekEff=getWeekEffect(S.day);
     if(weekEff[1]<0)dmg=Math.floor(dmg*0.8);if(S.dzzHpHalved)dmg=Math.floor(dmg*1.5);if(S.spread>90)dmg=Math.floor(dmg*0.8);
-    
     const dealt = applyPlayerDamage(dmg);S.pressure = Math.min(S.maxPressure, S.pressure + 5);
     addLog(S.invincibleMode ? `👹 滚木【${atk.name}】！无效` : `👹 滚木【${atk.name}】！-${dealt}HP`,'dmg');
     if(atk.name==='踹门')document.getElementById('app').classList.add('shake');
@@ -1077,15 +1104,11 @@ function updateUI(){
   document.getElementById('spreadText').textContent=`${S.spread}%`;document.getElementById('spreadBar').style.width=S.spread+'%';S.maxSpread=Math.max(S.maxSpread,S.spread);
   document.getElementById('pressureText').textContent=`${S.pressure}/${S.maxPressure}`;document.getElementById('pressureBar').style.width=(S.pressure/S.maxPressure*100)+'%';S.maxPressureReached = Math.max(S.maxPressureReached||0, S.pressure);
   document.getElementById('evidenceText').textContent=`${S.evidenceValue}/100`;document.getElementById('evidenceBar').style.width=S.evidenceValue+'%';
-  
   let moodEmoji = S.bossMood === 'happy' ? '😊' : S.bossMood === 'angry' ? '😠' : '😐';
   let moodText = S.bossMood === 'happy' ? '开心(攻-30%)' : S.bossMood === 'angry' ? '暴躁(攻+30%)' : '平常';
   document.getElementById('tagMood').textContent = S.moodKnown ? `${moodEmoji} ${moodText}` : '❓ 未知情绪';
-  
-  // 更新坚韧与执念层数UI
   document.getElementById('resilienceVal').textContent = S.bossResilience;
   if(document.getElementById('bossLayerVal')) document.getElementById('bossLayerVal').textContent = S.bossLayers || 0;
-  
   const atk=getBossAtk();document.getElementById('attackDisplay').innerHTML=`👹 滚木：<strong>${atk.name}</strong>（${atk.min}-${atk.max}）`;
   const hh=document.getElementById('healHint');if(S.affection>=30){hh.innerHTML='💚 <strong style="color:#55ff88;">回血条件满足！</strong>每天恢复5HP';hh.style.borderColor='#225544';}else{hh.innerHTML=`💚 好感度需≥30（当前${S.affection}）才能回血`;hh.style.borderColor='#552222';}
   document.getElementById('tagStreak').textContent=`🔥 连击x${S.streak}`;document.getElementById('tagStreak').className='status-tag'+(S.streak>=2?' active':'');
@@ -1094,7 +1117,6 @@ function updateUI(){
   if(S.buffs.studyBuff>0)buffs.push('📝低调');if(S.buffs.observeBuff>0)buffs.push('🔍观察');if(S.buffs.thinkBuff)buffs.push('🤔策略');if(S.buffs.musicFree)buffs.push('🎶免AP');if(S.buffs.dududuShield)buffs.push('🛡️护盾');if(S.buffs.parentProtect>0)buffs.push('👨‍👩‍👧保护');
   if(S.buffs.bossConfused)buffs.push('🌀混乱');
   if(S.buffs.bodyPassive)buffs.push('💪顽强');if(S.buffs.intPassive)buffs.push('🧠洞察');if(S.buffs.coolPassive)buffs.push('📢传说');
-  
   document.getElementById('tagBuff').textContent=buffs.length>0?buffs.join(' '):'-';document.getElementById('tagBuff').className='status-tag'+(buffs.length>0?' active':'');
   const rel=S.spread>90?'拥护':S.spread>60?'信任':S.spread>30?'友好':'陌生';document.getElementById('tagRelation').textContent=`👥 ${rel}`;
   const phaseLabel = S.bossHp > 1000 ? '阶段1' : S.bossHp > 500 ? '阶段2' : '阶段3';document.getElementById('tagBossPhase').textContent = `👹${phaseLabel}`;
@@ -1116,7 +1138,7 @@ function renderActions(){
     if(S.gameOver||S.ap<=0)return;
     if(S.cards.zsy){
         const b=document.createElement('button');b.className='action-btn zsy-btn';
-        let cost = S.location==='rooftop' ? 3 : 2; // 天台消耗+1
+        let cost = S.location==='rooftop' ? 3 : 2;
         b.disabled=S.ap<cost;
         b.innerHTML=`⚖️ 召唤校长德育处 <span class="ap-tag">AP${cost}</span>`;
         b.onclick=()=>useZSY();grid.appendChild(b);
@@ -1128,8 +1150,6 @@ function renderActions(){
         b.innerHTML=`⚔️ 继续反抗 <span class="ap-tag">AP${cost}</span>`;
         b.onclick=()=>continueAttack();grid.appendChild(b);
     }
-    
-    // 证据突袭
     if(S.evidenceValue >= 100){
         const eb = document.createElement('button');
         eb.className = 'action-btn attack-btn';
@@ -1145,7 +1165,6 @@ function renderActions(){
         };
         grid.appendChild(eb);
     }
-
     const loc=locations[S.location];
     loc.events.forEach((ev,i)=>{
         if(ev.cond&&!ev.cond())return;
@@ -1163,7 +1182,7 @@ function renderActions(){
         if(lk===S.location)return;
         const ld=locations[lk];
         const b=document.createElement('button');b.className='action-btn';
-        let cost = (S.course === '体育课' || S.location === 'hallway') ? 0 : 1; // 走廊移动不消耗AP
+        let cost = (S.course === '体育课' || S.location === 'hallway') ? 0 : 1;
         b.disabled=S.ap<cost;
         b.innerHTML=`前往 ${ld.icon} ${ld.name} <span class="ap-tag">AP${cost}</span>`;
         b.onclick=()=>moveTo(lk, cost);
@@ -1181,60 +1200,48 @@ function executeEvent(ev, cost){
   let mult=1;
   if(S.course==='语文课'&&ev.id==='expose')mult=1.2;
   if(S.course==='班会课'&&ev.id==='expose')mult=2;
-  if(S.location==='classroom'&&ev.id==='expose')mult*=1.2; // 教室揭露效果+20%
+  if(S.location==='classroom'&&ev.id==='expose')mult*=1.2;
   if(S.day===12)mult*=2;
   if(S.streak>=2)mult*=1.5;
   if(S.buffs.observeBuff){mult*=1.2;S.buffs.observeBuff=false}
   if(S.buffs.thinkBuff){mult*=1.3;S.buffs.thinkBuff=false}
-  
-  // Body专精被动：血量低于30%伤害+25%
   if(S.buffs.bodyPassive && S.playerHp < S.maxHp * 0.3) mult *= 1.25;
-
   if(ev.id==='report'&&S.bossLearning.report>=2) mult *= 0.7;
   if(ev.id==='spread2'&&S.bossLearning.spread>=3) mult *= 0.8;
   if(S.pressure >= 70) mult *= 0.85;
   if(S.pressure >= 90) mult *= 0.7;
-  
   const found=checkFound(ev.found||25);
   if(found){addLog('👁️ 被滚木发现了！','warn');bossCounter();streakCheck(false)}
   else streakCheck(true);
-  
   if(ev.eff.aff){S.affection+=Math.floor(ev.eff.aff*mult);updateBossMaxHp();}
   if(ev.eff.angry)S.angryPeople+=ev.eff.angry;
   if(ev.eff.targeted!==undefined)S.targeted=ev.eff.targeted;
   if(ev.eff.nailong)S.nailongBuff=ev.eff.nailong;
   if(ev.eff.spread){S.spread=Math.min(100,S.spread+Math.floor(ev.eff.spread*mult*(1+S.permanentBonuses.spreadBonus/100)));S.bossLearning.spread=(S.bossLearning.spread||0)+1;}
-  
-  // 接入绝望级滚木伤害判定
   if(ev.eff.bossDmg){
       const d=Math.floor(ev.eff.bossDmg*mult*(1+S.permanentBonuses.dmgBonus/100) * getResilienceFactor());
       applyDamageToBoss(d);
   }
-  
   if(ev.eff.atkProg){S.isAttacking=true;S.attackProgress=Math.min(100,S.attackProgress+Math.floor(ev.eff.atkProg*mult));S.bossLearning.resist=(S.bossLearning.resist||0)+1;}
-  
   if(ev.onUse)ev.onUse();
-  
   if(S.location==='classroom'&&ev.id==='study'&&!S.hiddenEventFound&&S.day%5===0){
       S.hiddenEventStep++;
       if(S.hiddenEventStep===1) addLog('📄 你在课本里发现了一张旧纸条...');
       else if(S.hiddenEventStep===2) addLog('📄 纸条背面写着半个日期...');
       else if(S.hiddenEventStep===3){
           S.hiddenEventFound=true;S.skillPoint+=3;
-          grantExp(30); // 发现隐藏事件+30EXP
+          grantExp(30);
           addLog('🔍 你拼凑出了隐藏的真相！获得3SP和30EXP');
       }
   }
   document.getElementById('storyText').textContent=ev.desc;
   if(ev.eff.log)addLog((S.streak>=2?'🔥 ':'')+ev.eff.log,found?'warn':'');
-  
   if(S.spread>=100){
       const spreadDmg=Math.floor(60 * getResilienceFactor());
       let actual = applyDamageToBoss(spreadDmg);
       S.spread=0;
       addLog('📢 恶行传遍全校！造成'+actual+'点伤害','card');
   }
-  
   if(S.buffs.musicStun){S.buffs.musicStun=false}
   else if(!found&&S.bossHp>0&&S.targeted&&!S.buffs.amulet&&!S.buffs.dududuShield)bossCounter();
   if(S.nailongBuff>0){S.nailongBuff--;if(S.nailongBuff<=0){S.targeted=true;addLog('⚠ 奶龙效果消失','warn')}}
@@ -1249,7 +1256,7 @@ function tryTriggerSideQuest(id) {
     if(!S.sideQuestFlags[id]) {
         S.sideQuestFlags[id] = true;
         S.sideQuestsTriggered++;
-        grantExp(50); // 触发支线任务 +50EXP
+        grantExp(50);
         addLog('📜 触发了支线事件！获得50EXP');
     }
 }
@@ -1258,10 +1265,8 @@ function useZSY(){
     let cost = S.location==='rooftop' ? 3 : 2;
     if(S.ap<cost||S.gameOver||!S.cards.zsy)return;
     S.ap-=cost;
-    
     let failChance = 0.5;
     if(S.bossMood === 'angry') failChance -= 0.2;
-    
     if(Math.random()<failChance){
         document.getElementById('storyText').textContent='你正准备大吼召唤校长...';
         document.getElementById('storyFlavor').textContent=cardDefs.zsy.failFlavor;
@@ -1272,7 +1277,6 @@ function useZSY(){
         if(S.cardUseStreak >= 2){ d = Math.floor(d * 0.7); addLog('🛡️ 滚木适应了你的攻击！伤害-30%','warn'); }
         if(S.buffs.bossConfused){ d = Math.floor(d * 1.15); addLog('🌀 滚木混乱！受到伤害+15%','heal'); }
         if(S.buffs.bodyPassive && S.playerHp < S.maxHp * 0.3) d = Math.floor(d * 1.25);
-        
         consumeCardIfNeeded('zsy');S.cardUses++;
         let actual = applyDamageToBoss(d);
         document.getElementById('storyText').textContent='你大吼一声！校长和德育处赶到！';
@@ -1299,15 +1303,12 @@ function useCard(key){
     if(!S.cards[key]||S.gameOver)return;
     trackHateSystem(key);
     if(key === 'dzz') S.dzzUses++;
-    
     const d=cardDefs[key];
     let dmg=S.streak>=2?Math.floor(d.dmg*1.5):d.dmg;
     dmg = Math.floor(dmg * getResilienceFactor());
-    
     if(S.cardUseStreak >= 2){ dmg = Math.floor(dmg * 0.7); addLog('🛡️ 滚木适应了你的攻击！变身卡伤害-30%','warn'); }
     if(S.buffs.bossConfused){ dmg = Math.floor(dmg * 1.15); addLog('🌀 滚木混乱中！本次及后续攻击伤害+15%','heal'); }
     if(S.buffs.bodyPassive && S.playerHp < S.maxHp * 0.3) dmg = Math.floor(dmg * 1.25);
-
     consumeCardIfNeeded(key);S.cardUses++;
     let actual = applyDamageToBoss(dmg);
     document.getElementById('storyText').textContent=`使用变身卡：${d.full}！`;
@@ -1326,15 +1327,12 @@ function useCombo(type){
     const c=combos[type];if(!c||S[c.flag])return;
     let dmg=S.streak>=2?Math.floor(c.dmg*1.5):c.dmg;
     dmg = Math.floor(dmg * getResilienceFactor());
-    
-    // 不受仇恨系统减免，但享受混乱加成
     if(S.buffs.bossConfused){ dmg = Math.floor(dmg * 1.15); }
     if(S.buffs.bodyPassive && S.playerHp < S.maxHp * 0.3) dmg = Math.floor(dmg * 1.25);
-    
     S.cardUses++;
     c.consume.forEach(k=>consumeCardIfNeeded(k));S[c.flag]=true;
     let actual = applyDamageToBoss(dmg);
-    grantExp(100); // 组合技奖励
+    grantExp(100);
     document.getElementById('storyText').textContent='💥 组合技发动！';
     document.getElementById('storyFlavor').textContent=c.flavor;
     addLog(c.log.replace(/\d+/,(m)=>actual),'card');
@@ -1352,18 +1350,14 @@ function continueAttack(){
     if(S.attackProgress >= 100){
         S.isAttacking = false;
         S.attackProgress = 0;
-        
         S.bossResilience = Math.max(0, S.bossResilience - 1);
         addLog('⚔️ 破防成功！削减滚木1层坚韧！','card');
-        
         S.resistPower = Math.min(100, S.resistPower + 10);
         let dmg = Math.floor((15 + S.resistPower * 0.8) * getResilienceFactor());
         if(S.streak >= 2) dmg = Math.floor(dmg * 1.3);
         if(S.buffs.bodyPassive && S.playerHp < S.maxHp * 0.3) dmg = Math.floor(dmg * 1.25);
-        
         let actual = applyDamageToBoss(dmg);
         addLog(`⚔️ 破防突袭造成 ${actual} 点伤害`,'dmg');
-        
         const cdmg = Math.floor(Math.random()*16)+10;
         const fc = S.dzzHpHalved ? Math.floor(cdmg*1.5) : cdmg;
         applyPlayerDamage(fc);
@@ -1393,15 +1387,12 @@ function moveTo(lk, cost){
     S.location=lk;
     document.getElementById('storyText').textContent=`你来到了${locations[lk].name}。`;
     addLog(`移动到${locations[lk].name}`);
-    
-    // 走廊遭遇增加
     let encounterChance = lk === 'hallway' ? 0.5 : 0.25;
     if(lk==='hallway'&&S.targeted&&Math.random()<encounterChance){
         addLog('🚪 走廊被围追堵截！','warn');bossCounter();streakCheck(false);
     }else{
         streakCheck(true);
     }
-    
     musicComboCheck();checkHpThresholds();checkItemDrop();advanceTime();updateUI();
 }
 
@@ -1410,14 +1401,13 @@ function updateBlockedLocations(){S.blockedLocations = [];if(S.day > 20 && S.npc
 
 function endDay(){
   if(S.gameOver)return;addLog(`🌙 ${getDateString(S.day)}结束`);
-  
+  // 回血逻辑保持不变（每天固定5HP）
   if(S.affection>=30){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 恢复5HP','heal');}else addLog('⚠️ 好感度不足，无法回血','warn');
   if(S.affection>=30){S._healStreak=(S._healStreak||0)+1;if(S._healStreak>=3){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 连续3天好感≥30！额外+5HP','heal');S._healStreak=0}}else S._healStreak=0;
   S.spread=Math.max(0,S.spread-5);
-  
   if(S.buffs.coolPassive){ S.spread=Math.min(100,S.spread+3); addLog('📢 传说之力发散：自动传播+3%','card'); }
   
-  // ================= 绝望级滚木：夜间潜伏复原与证据清洗 =================
+  // 夜间恢复与清洗（保持原有）
   if (S.bossHp > 0) {
       if (S.invincibleMode) {
           addLog('⭐ 无敌模式：滚木无法回血','heal');
@@ -1431,17 +1421,16 @@ function endDay(){
           S.bossHp = Math.min(S.bossMaxHp, S.bossHp + bh);
           addLog(`🌙 夜幕降临，滚木销毁不利证据，恢复了 ${bh} HP，层数清零！`, 'warn');
       }
-      S.bossLayers = 0; // 夜间清洗状态层数
+      S.bossLayers = 0;
   }
   S.bossRegenBoost = false;
-  // ======================================================================
 
   if (S.day % 10 === 0 && S.day > 0) {
       S.bossResilience++;
       addLog('🛡️滚木变得更加坚韧！防御增强','warn');
   }
   
-  // 情绪波动机制
+  // 情绪波动机制（保持原有）
   const rMood = Math.random();
   if(rMood < 0.33) S.bossMood = 'happy';
   else if(rMood < 0.66) S.bossMood = 'angry';
@@ -1449,15 +1438,23 @@ function endDay(){
   S.moodKnown = S.buffs.intPassive; 
   if(S.moodKnown) addLog('🧠 洞察力启动：已预知明日滚木心情！','heal');
 
+  // 新增：好感度回血优化（在原有5HP基础上额外概率获得创可贴）
+  if(S.affection >= 30 && Math.random() < 0.3 && S.items.length < S.maxItems && !S.items.includes('bandaid')) {
+      S.items.push('bandaid');
+      addLog('💊 滚木心情不错，你捡到了一个创可贴！','heal');
+  }
+  if(S.affection >= 60 && Math.random() < 0.5 && S.items.length < S.maxItems && !S.items.includes('bandaid')) {
+      S.items.push('bandaid');
+      addLog('💊 滚木心情愉悦，又捡到一个创可贴！','heal');
+  }
+
   S.pressure = Math.max(0, S.pressure - 5);if(S.pressure >= 80) addLog('😰 压力过高，你做了一个噩梦...', 'warn');
   if(S.day > 15 && S.affection < -20) S.npcStance.teacher = 'hostile';if(S.spread > 50) S.npcStance.students = 'supportive';
   S.isAttacking=false;S.attackProgress=0;S.streak=0;S.musicCombo=0;
-  S.buffs={ bossConfused: false, bodyPassive: S.buffs.bodyPassive, intPassive: S.buffs.intPassive, coolPassive: S.buffs.coolPassive }; // 保留被动
+  S.buffs={ bossConfused: false, bodyPassive: S.buffs.bodyPassive, intPassive: S.buffs.intPassive, coolPassive: S.buffs.coolPassive };
   const sp=getSpecialDay(S.day);if(sp){sp.eff();addLog(`📅 ${sp.name}：${sp.desc}`,'card')}
   if(S.day%4===0)randomEvent();
-  
   if(S.playerHp<50&&S.day>10) applyDamageToBoss(20);
-  
   if (S.parentCallCooldown > 0) S.parentCallCooldown--;
   S.day++;S.ap=S.maxAp;S.timeIndex=0;S.course=courses[S.day%7]?courses[S.day%7][0]:'无课';S.courseEffect=courses[S.day%7]?courses[S.day%7][1]:'';S.weather=getWeather(S.day);
   updateBossMaxHp();
@@ -1493,6 +1490,38 @@ function refreshDailyTasks(){
 function checkMainQuest(){if(S.mainQuestStage===1&&S.spread>=30){S.mainQuestStage++;S.ap=S.maxAp;addLog('📜 主线推进：需要报告德育处2次','card')}else if(S.mainQuestStage===3&&S.bossHp<=800){S.mainQuestStage++;S.playerHp=S.maxHp;addLog('📜 主线推进：滚木进入二阶段！','warn')}}
 function advanceMainQuest(){S.mainQuestStage++;addLog('📜 主线达成！全属性提升','card');S.permanentBonuses.dmgBonus+=10;S.permanentBonuses.maxHpBonus+=20;S.maxHp+=20;}
 
+// 支线任务奖励创可贴
+function triggerSy(){S.sideQuestFlags.sy=true;S.permanentBonuses.spreadBonus+=20;S.permanentBonuses.dmgBonus+=10;addLog('🚨sy带你加入信息帮！');S.targeted=true;bossCounter();}
+function triggerLsy(){S.sideQuestFlags.lsy=true;S.maxHp+=30;S.playerHp=Math.min(S.maxHp,S.playerHp+30);S.spread=Math.min(100,S.spread+5);S.attributePoint+=2;S.skillPoint+=2;
+    // 奖励创可贴
+    if(S.items.length < S.maxItems) S.items.push('bandaid');
+    if(S.items.length < S.maxItems) S.items.push('bandaid');
+    addLog('📚学霸团加入！赠送2个创可贴');}
+function triggerZqt(){S.sideQuestFlags.zqt=true;S.bossHp=Math.max(0,S.bossHp-200);S.totalDmg+=200;S.spread=Math.min(100,S.spread+10);if(!S.cards.zsy)S.cards.zsy=true;
+    if(S.items.length < S.maxItems) S.items.push('bandaid');
+    addLog('👩‍🏫zqt老师赋予权限！并送了创可贴');}
+function triggerFbq(){S.sideQuestFlags.fbq=true;S.targeted=false;S.nailongBuff=2;
+    if(S.items.length < S.maxItems) S.items.push('bandaid');
+    addLog('🎤fbq帮你吓退滚木！并给了创可贴');}
+
+function tryTriggerSideQuest(questId) {
+    if (S.sideQuestFlags[questId]) return;
+    S.sideQuestAttempts[questId] = (S.sideQuestAttempts[questId] || 0) + 1;
+    const attempts = S.sideQuestAttempts[questId];
+    const baseChance = 0.35;
+    const isGuaranteed = attempts >= 4;
+    if (Math.random() < baseChance || isGuaranteed) {
+        S.sideQuestAttempts[questId] = 0;
+        if (questId === 'sy') triggerSy();
+        else if (questId === 'lsy') triggerLsy();
+        else if (questId === 'zqt') triggerZqt();
+        else if (questId === 'fbq') triggerFbq();
+        S.sideQuestsTriggered++; // 确保这里递增
+        grantExp(50); // 触发支线任务 +50EXP
+        addLog('📜 触发了支线事件！获得50EXP');
+    }
+}
+
 document.getElementById('openSkillBtn').onclick = openSkillTree;
 document.getElementById('closeSkillBtn').onclick = closeSkillTree;
 document.getElementById('endDayBtn').onclick = () => { if(!S.gameOver) { S.ap=0; advanceTime(); } };
@@ -1511,12 +1540,15 @@ document.addEventListener('keydown', (e) => {
     if(e.key.toLowerCase()==='z') useZSY();
 });
 
-// Init
-refreshDailyTasks();
-loadSkillData();
-updateBossMaxHp();
-updateUI();
-renderRankings('startLeaderboardBox', false);
+// 初始化时加载云端排行榜
+async function init() {
+    refreshDailyTasks();
+    loadSkillData();
+    updateBossMaxHp();
+    updateUI();
+    await renderRankings('startLeaderboardBox', false);
+}
+init();
 </script>
 </body>
 </html>
