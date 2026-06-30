@@ -252,11 +252,11 @@
       <p>· 好感度达到100%触发"歌剧魅影"（失败）。</p>
       <p>· 生命值归零或超过61天未击败滚木，游戏失败。</p>
       <p>. 更新日志：</p>
-      <p>. 2026.6.30 增加创可贴掉落；支线奖励创可贴；排行榜全局同步。</p>
+      <p>. 添加特定彩蛋，昵称为彩蛋人物缩写或其他，密码格式为（xxxLxxx(可以是事情，也可以是人）)</p>
     </div>
     <div class="nickname-row">
       <label for="nicknameInput">昵称</label>
-      <input id="nicknameInput" class="nickname-input" type="text" placeholder="请输入昵称" maxlength="16">
+      <input id="nicknameInput" class="nickname-input" type="text" placeholder="请输入昵称(特定账号有惊喜)" maxlength="16">
     </div>
     <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
       <button class="start-btn" onclick="startGame()" style="padding:12px 40px;font-size:1.2em;font-weight:bold;font-family:inherit;background:#cc3333;color:white;border:none;border-radius:30px;cursor:pointer;transition:all 0.3s;box-shadow:0 0 25px rgba(255,0,0,0.3);letter-spacing:2px;">开 始 游 戏</button>
@@ -271,7 +271,7 @@
 
 <div class="password-overlay" id="adminPasswordOverlay" style="display:none;">
   <div class="password-box">
-    <h3>管理员验证</h3>
+    <h3>专属/管理账号验证</h3>
     <p>请输入密码后继续。</p>
     <input id="adminPasswordInput" class="password-input" type="password" maxlength="32" placeholder="请输入密码" autocomplete="off">
     <div class="password-actions">
@@ -279,6 +279,42 @@
       <button class="password-btn secondary" onclick="cancelAdminLogin()">取消</button>
     </div>
   </div>
+</div>
+
+<div class="task-overlay" id="manualOverlay" style="display:none; z-index: 250;">
+    <div class="task-window" style="max-width: 800px; padding: 25px;">
+        <div class="skill-head">
+            <div class="skill-title">📖 游玩手册</div>
+            <button class="skill-close-btn" onclick="document.getElementById('manualOverlay').style.display='none'">✕</button>
+        </div>
+        <div style="font-size:0.85em; color:#ddd; line-height: 1.8;">
+            <h3 style="color:#ffaa00; margin-bottom:6px;">基础属性</h3>
+            <p><b>⚡ AP (行动力):</b> 每天执行行动需要消耗，耗尽必须结束今天。考试、自习课等会影响 AP。</p>
+            <p><b>❤️ 好感度:</b> 影响滚木最大血量。好感度高滚木血量高，但太低会引发报复。100%直接触发“歌剧魅影”剧情杀导致失败。< 0 且愤怒人数≥5 会触发狂暴。</p>
+            <p><b>📢 传播度:</b> 满100%时会爆发造成大量伤害。每天下降。</p>
+            <p><b>🧠 压力值:</b> 被发现时增加，达到满值会有负面噩梦影响。</p>
+            <p><b>📂 证据链:</b> 满 100 后解锁“调取监控/教务处签单”，这是【终极规则杀】，直接强制让其休学/退学，无视血量秒杀滚木！注意：证据收集难度会随进度增加，且每晚都会因滚木的销毁而发生衰减。</p>
+            <br>
+            <h3 style="color:#88ccff; margin-bottom:6px;">核心战斗与生存机制</h3>
+            <p><b>🦇 讥笑标记:</b> 滚木会随机盯上你进行讥笑。带有被讥笑状态时，滚木会在夜间疯狂吸取你的情绪大量回血！破局方法：在走廊使用【奶龙大笑】可破除讥笑，并让滚木错愕禁疗 2 天。</p>
+            <p><b>👂 幻听干扰:</b> 当系统提示滚木正在蓄力准备大量回血时，可以在行动面板上方出现的【指令框】中输入线索代码打断他。一旦输入正确，滚木会严重幻听、胡言乱语并自残！线索可通过上课学习随机获得。</p>
+            <p><b>🔪 借刀杀人 (狂暴事件):</b> 故意降低滚木好感度小于 0，并拉拢同学让愤怒人数达到 5 人。他将在数学课上触发【狂暴模式】无差别攻击。切记不可正面制止，选择【冷眼旁观】可以引来管理层利用规则将其反杀。</p>
+            <p><b>🃏 变身卡:</b> HP 降低时概率觉醒。专属账号（如 zsy, cqy）自带无限卡，但带有严重的专属分心负面效果。</p>
+        </div>
+    </div>
+</div>
+
+<div class="ending-overlay" id="enrageOverlay" style="display:none; z-index: 260;">
+    <div class="ending-box" style="border-color: #ff2222; box-shadow: 0 0 50px rgba(255,0,0,0.5);">
+        <h1 style="color:#ff2222; margin-bottom:15px; font-size:1.6em;">⚠️ 数学课狂暴事件！</h1>
+        <div class="ending-text" style="color:#eee; font-size:1em; margin-bottom:25px;">
+            由于你和同学的不断激怒，滚木在数学课上突然站起，认为全世界都在针对他！<br>
+            他转身向你，口齿伶俐地开始疯狂辱骂，甚至准备动手制裁所有人！<br>
+            此时，你要怎么做？
+        </div>
+        <button class="ending-choice-btn" onclick="handleEnrage(1)" style="border-color:#ff4444; color:#ff4444;">【正面制止他】</button>
+        <button class="ending-choice-btn" onclick="handleEnrage(2)" style="border-color:#44cc44; color:#44cc44;">【隐藏 / 冷眼旁观】</button>
+    </div>
 </div>
 
 <div class="dlc-page" id="dlcPage" style="display:none;">
@@ -292,7 +328,7 @@
 <div class="container" id="app" style="display:none;">
   <div class="header">
     <div class="title">⚔️ 正义的反击</div>
-    <div class="subtitle">—— 揭露滚木恶行，守护滚木学校 ——</div>
+    <div class="subtitle">—— 揭露滚木恶行，守护 lz 学校 ——</div>
   </div>
   <div class="info-row">
     <div class="info-cell"><div class="lbl">📅 日期</div><div class="val" id="dayVal" style="color:#ffaa00;">9月1日</div></div>
@@ -320,7 +356,7 @@
   <div class="bar-section"><div class="bar-header"><span>❤️ 好感度</span><span id="affText">0（冷漠）</span></div><div class="bar-outer"><div class="aff-inner" id="affBar" style="width:50%;"></div></div></div>
   <div class="bar-section"><div class="bar-header"><span>📢 传播</span><span id="spreadText">0%</span></div><div class="bar-outer"><div class="spread-inner" id="spreadBar" style="width:0%;"></div></div></div>
   <div class="bar-section"><div class="bar-header"><span>🧠 压力</span><span id="pressureText">0/100</span></div><div class="bar-outer"><div class="pressure-inner" id="pressureBar" style="width:0%;"></div></div></div>
-  <div class="bar-section" id="evidenceBarContainer"><div class="bar-header"><span>📂 证据链 <span style="font-size:0.8em;color:#999">(满100触发突袭)</span></span><span id="evidenceText">0/100</span></div><div class="bar-outer"><div class="evidence-inner" id="evidenceBar" style="width:0%;"></div></div></div>
+  <div class="bar-section" id="evidenceBarContainer"><div class="bar-header"><span>📂 证据链 <span style="font-size:0.8em;color:#999">(满100触发教务处签单)</span></span><span id="evidenceText">0/100</span></div><div class="bar-outer"><div class="evidence-inner" id="evidenceBar" style="width:0%;"></div></div></div>
   
   <div class="status-row">
     <span>状态：</span>
@@ -334,6 +370,7 @@
   <div class="skillbar-row">
     <button class="skill-open-btn" id="openSkillBtn">⭐ 技能树</button>
     <button class="task-btn" id="openTaskBtn">📜 任务</button>
+    <button class="task-btn" style="border-color:#5588cc; color:#88ccff;" onclick="document.getElementById('manualOverlay').style.display='flex'">📖 手册</button>
     <div class="skill-meta"><span id="lvText">Lv.1</span><span id="expText">EXP 0/100</span><span id="spText">SP 3</span><span id="apText2">AP 0</span></div>
     <button class="admin-reset-btn" id="adminResetBtn" style="display:none;" onclick="resetAllData()">🧹 重置所有数据</button>
   </div>
@@ -345,7 +382,13 @@
   <div class="attack-display" id="attackDisplay">👹 滚木：<strong>语言讥笑</strong>（5-8）</div>
   <div class="heal-hint" id="healHint">💚 好感度≥30时每天恢复5HP</div>
   <div class="story-panel"><div class="story-text" id="storyText">滚木站在走廊尽头盯着你。今天，你决定反击...</div><div class="story-flavor" id="storyFlavor"></div></div>
-  <div class="actions-label">🎯 行动</div><div class="actions-grid" id="actionsGrid"></div>
+  <div class="actions-label">🎯 行动</div>
+  <div id="codeActionDiv" style="display:none; margin-bottom: 8px; background: rgba(100,50,0,0.2); padding: 8px; border-radius: 8px; border: 1px dashed #ff8800;">
+      <span style="font-size:0.75em; color:#ffaa00; margin-bottom:6px; display:block;">⚠️ 滚木正在蓄力准备夜间回血，尝试输入线索指令让他幻听打断：</span>
+      <input type="text" id="codeInput" class="nickname-input" style="width:160px; padding:6px 10px; font-size:0.8em; margin-right:6px; background: rgba(0,0,0,0.5);" placeholder="神秘指令...">
+      <button class="action-btn" style="padding:6px 12px; display:inline-block;" onclick="submitCode()">执行干扰</button>
+  </div>
+  <div class="actions-grid" id="actionsGrid"></div>
   <button class="end-day-btn" id="endDayBtn">🌙 结束今天</button>
   <div class="log-section"><h4>📜 记录</h4><div id="logContainer"><div class="log-entry"><span class="tg">[开始]</span> 反击开始！</div></div></div>
   <div class="key-hint">快捷键: 1-4选择 | E结束 | Z使用ZSY</div>
@@ -359,14 +402,14 @@ const JSONBIN_BIN_ID = ''; // 填入你的 JSONBin Bin ID (例如: 6123456789abc
 const JSONBIN_API_KEY = ''; // 可选的 API Key (如果需要私有访问)
 
 async function syncLeaderboardToCloud(data) {
-    if (!JSONBIN_BIN_ID) return false; // 未配置则不同步
+    if (!JSONBIN_BIN_ID) return false; 
     try {
         const url = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
         const res = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Master-Key': JSONBIN_API_KEY || '$2b$10$YQ...' // 公共默认key，请替换为自己的
+                'X-Master-Key': JSONBIN_API_KEY || '$2b$10$YQ...' 
             },
             body: JSON.stringify(data)
         });
@@ -399,17 +442,13 @@ async function loadLeaderboardFromCloud() {
     return null;
 }
 
-// 增强版排行渲染：支持异步加载云端数据
 async function renderGlobalLeaderboard(boxId, withSuggestion = false) {
     const box = document.getElementById(boxId);
     if (!box) return;
 
-    // 先显示本地数据
     let data = normalizeRankings(loadRankings());
-    // 尝试加载云端数据
     const cloudData = await loadLeaderboardFromCloud();
     if (cloudData) {
-        // 合并云端与本地（云端优先）
         const merged = {
             fastest: dedupeAndSortRanking(
                 [...(cloudData.fastest || []), ...(loadRankings().fastest || [])],
@@ -421,7 +460,6 @@ async function renderGlobalLeaderboard(boxId, withSuggestion = false) {
             )
         };
         data = normalizeRankings(merged);
-        // 同时更新本地存储
         saveRankings(data);
     }
 
@@ -467,7 +505,6 @@ function renderRankingsContent(box, data, withSuggestion) {
     `;
 }
 
-// 修改原有的renderRankings，改为调用异步版本
 function renderRankings(boxId, withSuggestion = false) {
     renderGlobalLeaderboard(boxId, withSuggestion);
 }
@@ -535,7 +572,6 @@ function normalizeRankings(data){
 }
 function saveRankings(data){
     localStorage.setItem('rollwood_rankings', JSON.stringify(normalizeRankings(data)));
-    // 同时尝试同步云端
     syncLeaderboardToCloud(normalizeRankings(data));
 }
 function loadSuggestions(){
@@ -620,22 +656,98 @@ const DLC = {
   ]
 };
 
+// ==================== 账号登录系统 ====================
+let pendingLogin = '';
+
 function startGame() {
   const input = document.getElementById('nicknameInput');
   const raw = (input && input.value ? input.value : '').trim();
   S.rawNickname = raw;
+  
   if (raw === ADMIN_NICKNAME) {
     if (isAdminUnlocked()) {
-      proceedStartGame(true);
+      proceedStartGame(true, 'xqs');
     } else {
-      openAdminPasswordGate();
+      openAdminPasswordGate('xqs');
     }
     return;
   }
+  
+  if (raw === 'zsy') { openAdminPasswordGate('zsy'); return; }
+  if (raw === 'cqy') { openAdminPasswordGate('cqy'); return; }
+  if (raw === 'superzqt') { openAdminPasswordGate('superzqt'); return; }
+
   sessionStorage.removeItem('rollwood_admin_verified');
   S.isAdmin = false;
   S.invincibleMode = false;
-  proceedStartGame(false);
+  proceedStartGame(false, '');
+}
+
+function openAdminPasswordGate(type){
+  pendingLogin = type;
+  const overlay = document.getElementById('adminPasswordOverlay');
+  const input = document.getElementById('adminPasswordInput');
+  if(!overlay || !input) return;
+  input.value = '';
+  overlay.style.display = 'flex';
+  setTimeout(()=>input.focus(), 50);
+}
+
+function cancelAdminLogin(){
+  const overlay = document.getElementById('adminPasswordOverlay');
+  if(overlay) overlay.style.display = 'none';
+  document.getElementById('rulesPage').style.display = 'flex';
+}
+
+function verifyAdminPassword(){
+  const input = document.getElementById('adminPasswordInput');
+  const pwd = (input?.value || '').trim();
+  
+  if (pendingLogin === 'xqs' && pwd === ADMIN_PASSWORD) {
+    sessionStorage.setItem('rollwood_admin_verified', '1');
+    proceedStartGame(true, 'xqs');
+  } else if (pendingLogin === 'zsy' && pwd === 'zsyLkxy') {
+    proceedStartGame(false, 'zsy');
+  } else if (pendingLogin === 'cqy' && pwd === 'cqyLtjz') {
+    proceedStartGame(false, 'cqy');
+  } else if (pendingLogin === 'superzqt') {
+    proceedStartGame(false, 'superzqt');
+  } else {
+    showToast('密码错误');
+    return;
+  }
+  
+  const overlay = document.getElementById('adminPasswordOverlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+function proceedStartGame(isAdminMode=false, customAccount=''){
+  const raw = S.rawNickname || '';
+  S.isAdmin = !!isAdminMode;
+  S.playerName = isAdminMode ? 'xqs' : (raw || '匿名');
+  S.invincibleMode = false;
+  S.customAccount = customAccount;
+  
+  document.getElementById('rulesPage').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  document.getElementById('dlcPage').style.display = 'none';
+  
+  if (customAccount === 'xqs') {
+      S.hasAdminPen = true;
+      addLog('👑 最高权限账号登录：自带管理层签单笔，可随时进行终极规则杀！','card');
+  } else if (customAccount === 'zsy') {
+      S.cards.zsy = true;
+      addLog('⚠️ ZSY专属账号登录：无限 ZSY 卡，但 80% 概率分心！','warn');
+  } else if (customAccount === 'cqy') {
+      S.cards.cqy = true;
+      addLog('⚠️ CQY专属账号登录：无限 CQY 卡，但 80% 概率去偷卷子！','warn');
+  } else if (customAccount === 'superzqt') {
+      S.zqtShields = 3;
+      addLog('🛡️ superzqt 登录：已装备【银黑军团护盾】，可抵挡 3 次致命伤害！','heal');
+  }
+  
+  renderRankings('startLeaderboardBox', false);
+  updateUI();
 }
 
 function startDLC() {
@@ -699,44 +811,6 @@ function renderDLCScene() {
   }
 }
 
-function openAdminPasswordGate(){
-  const overlay = document.getElementById('adminPasswordOverlay');
-  const input = document.getElementById('adminPasswordInput');
-  if(!overlay || !input) return;
-  input.value = '';
-  overlay.style.display = 'flex';
-  setTimeout(()=>input.focus(), 50);
-}
-function cancelAdminLogin(){
-  const overlay = document.getElementById('adminPasswordOverlay');
-  if(overlay) overlay.style.display = 'none';
-  document.getElementById('rulesPage').style.display = 'flex';
-}
-function verifyAdminPassword(){
-  const input = document.getElementById('adminPasswordInput');
-  const pwd = (input?.value || '').trim();
-  if(pwd !== ADMIN_PASSWORD){
-    showToast('密码错误');
-    return;
-  }
-  sessionStorage.setItem('rollwood_admin_verified', '1');
-  S.isAdmin = true;
-  const overlay = document.getElementById('adminPasswordOverlay');
-  if(overlay) overlay.style.display = 'none';
-  proceedStartGame(true);
-}
-function proceedStartGame(isAdminMode=false){
-  const raw = S.rawNickname || '';
-  S.isAdmin = !!isAdminMode;
-  S.playerName = isAdminMode ? 'xqs' : (raw || '匿名');
-  S.invincibleMode = raw === ADMIN_NICKNAME;
-  document.getElementById('rulesPage').style.display = 'none';
-  document.getElementById('app').style.display = '';
-  document.getElementById('dlcPage').style.display = 'none';
-  if (S.invincibleMode) addLog('⭐ 已开启无敌模式','card');
-  renderRankings('startLeaderboardBox', false);
-  updateUI();
-}
 function resetAllData(){
   if(!isAdminUnlocked()) return showToast('无权限');
   if(!confirm('确定要重置所有本地数据吗？这将清空排行榜、建议和存档。')) return;
@@ -754,6 +828,7 @@ const S = {
   location:'classroom', spread:0, attackProgress:0, isAttacking:false,
   gameOver:false, victory:false, titles:[],
   playerName:'', invincibleMode:false, rawNickname:'', isAdmin:false,
+  customAccount: '', hasAdminPen: false, zqtShields: 0,
   cards:{zsy:false,xqs:false,cqy:false,dzz:false},
   items:[], maxItems:3, dzzHpHalved:false, comboUsed:false,
   streak:0, weather:'晴天', weatherDay:0, buffs:{}, bossPhase:1, musicCombo:0,
@@ -786,7 +861,12 @@ const S = {
   cardUseStreak: 0,
   legalShields: 0,
   dzzUses: 0,
-  sideQuestsTriggered: 0
+  sideQuestsTriggered: 0,
+  mockeryMark: false,
+  healStun: 0,
+  chargingHeal: false,
+  cluesFound: 0,
+  enrageTriggered: false
 };
 
 const MAX_DAYS = 61;
@@ -813,7 +893,7 @@ const skillTreeData = {
   intelligence: { name:'🧠 Intelligence', desc:'调查、证据、预判、规则破解。', color:'#62c7ff', perks: [
     {id:'i1',name:'巧劲',tier:1,req:1,max:3,desc:['(互斥:重拳)被发现率-8%','(互斥:重拳)被发现率-16%','(互斥:重拳)被发现率-28%'],gold:false},
     {id:'i2',name:'侦查',tier:1,req:2,max:3,desc:['看见隐藏信息','看见更多隐藏信息','看见全部隐藏信息'],gold:false},
-    {id:'i3',name:'证据链',tier:2,req:4,max:3,desc:['举报伤害+20%','举报伤害+40%','举报伤害+70%'],gold:false},
+    {id:'i3',name:'证据链',tier:2,req:4,max:3,desc:['证据获取+20%','证据获取+40%','证据获取+70%'],gold:false},
     {id:'i4',name:'预判',tier:2,req:6,max:2,desc:['下回合成功率+10%','下回合成功率+25%'],gold:false},
     {id:'i5',name:'解构',tier:3,req:8,max:3,desc:['Boss攻击-5%','Boss攻击-10%','Boss攻击-20%'],gold:false},
     {id:'i6',name:'规则破解',tier:4,req:12,max:1,desc:['每局可让一条规则失效一次'],gold:true},
@@ -861,17 +941,24 @@ function learnSkill(id){ const sk=getSkillById(id); if(!sk) return; const key=sk
 function upgradeAttr(attr){ if(S.attributePoint<=0) return addLog('💎 属性点不足','warn'); if(S.attributes[attr]>=20) return; S.attributePoint--; S.attributes[attr]++; addLog(`⬆️ ${attr} +1`,'heal'); applySkillEffects(); syncSkillUI(); renderSkillTree(); updateUI(); }
 function grantExp(v){ S.exp += v; while(S.exp >= S.needExp){ S.exp -= S.needExp; S.playerLevel++; S.needExp = Math.floor(100 + (S.playerLevel-1)*30); S.skillPoint += 2; S.attributePoint += 1; addLog(`⬆️ 升级到 Lv.${S.playerLevel}，获得2技能点和1属性点`,'card'); } syncSkillUI(); }
 function applySkillEffects(){ 
-    const e = { attackBonus:0, bossBonus:0, spreadBonus:0, foundCut:0, cardBonus:0, itemCap:0 }; 
+    const e = { attackBonus:0, bossBonus:0, spreadBonus:0, foundCut:0, cardBonus:0, itemCap:0, evidenceBonus:0 }; 
     for(const id in S.skills){ 
         const lv=S.skills[id]; if(lv<=0) continue; 
         if(id==='b1') e.attackBonus += [0.1,0.2,0.35][lv-1]; 
         if(id==='b2') e.bossBonus += [0.05,0.1,0.2][lv-1]; 
         if(id==='c1') e.spreadBonus += [0.1,0.2,0.35][lv-1]; 
         if(id==='i1') e.foundCut += [8,16,28][lv-1]; 
+        if(id==='i3') e.evidenceBonus += [0.2,0.4,0.7][lv-1]; 
         if(id==='r2') e.cardBonus += [0.1,0.2,0.35][lv-1]; 
         if(id==='t1') e.itemCap = [1,2,3][lv-1]; 
     } 
     S._skillEffects = e; 
+if(S.skills['t2']){
+    e.bandageBonus = [5, 10, 20][S.skills['t2'] - 1] || 0;
+} else {
+    e.bandageBonus = 0;
+}
+S._skillEffects = e;
     if(e.itemCap) S.maxItems = 3 + e.itemCap; 
     S.buffs.bodyPassive = (S.attributes.body >= 15);
     S.buffs.intPassive = (S.attributes.intelligence >= 15);
@@ -896,11 +983,24 @@ function closeSkillTree(){ document.getElementById('skillOverlay').style.display
 function saveSkillData(){ const data = { playerLevel:S.playerLevel, exp:S.exp, needExp:S.needExp, skillPoint:S.skillPoint, attributePoint:S.attributePoint, attributes:S.attributes, skills:S.skills, currentSkillTab:S.currentSkillTab }; localStorage.setItem('rollwood_skill_save',JSON.stringify(data)); }
 function loadSkillData(){ const raw = localStorage.getItem('rollwood_skill_save'); if(!raw) return; try{ const d=JSON.parse(raw); S.playerLevel = d.playerLevel||1; S.exp = d.exp||0; S.needExp = d.needExp||100; S.skillPoint = d.skillPoint||0; S.attributePoint = d.attributePoint||0; S.attributes = Object.assign({body:3,intelligence:3,cool:3,technical:3,relic:0}, d.attributes||{}); S.skills = d.skills||{}; S.currentSkillTab = d.currentSkillTab||'body'; applySkillEffects(); syncSkillUI(); }catch(e){} }
 
-function consumeCardIfNeeded(key){ if(!S.invincibleMode) S.cards[key]=false; }
+function consumeCardIfNeeded(key){ 
+    if(S.invincibleMode) return;
+    if(key === 'zsy' && S.customAccount === 'zsy') return;
+    if(key === 'cqy' && S.customAccount === 'cqy') return;
+    S.cards[key]=false; 
+}
+
 function applyPlayerDamage(dmg, source=''){
     if(S.invincibleMode || dmg <= 0){
         if(source) addLog(`⭐ 无敌模式：${source}伤害无效`,'heal');
         return 0;
+    }
+    if(S.zqtShields > 0) {
+        if(S.playerHp - dmg <= 0) {
+            S.zqtShields--;
+            addLog(`🛡️ 银黑军团护盾抵挡了致命一击！(剩余 ${S.zqtShields} 次)`,'heal');
+            return 0;
+        }
     }
     S.playerHp = Math.max(0, S.playerHp - dmg);
     S.totalTaken += dmg;
@@ -977,7 +1077,12 @@ const itemDefs={
     amulet:{name:'🛡️护身符',desc:'免疫一次攻击',onUse:()=>{S.buffs.amulet=true;addLog('🛡️ 护身符就绪，免疫下次攻击','heal')}},
     handbook:{name:'📘校规手册',desc:'下次揭露效果翻倍',onUse:()=>{S.buffs.handbook=true;addLog('📘 下次揭露恶行效果翻倍','card')}},
     speaker:{name:'🎤扩音器',desc:'传播+15%',onUse:()=>{S.spread=Math.min(100,S.spread+15);addLog('🎤 使用扩音器！传播+15%','card')}},
-    bandaid:{name:'💊创可贴',desc:'恢复10HP',onUse:()=>{S.playerHp=Math.min(S.maxHp,S.playerHp+10);addLog('💊 使用创可贴！HP+10','heal')}},
+    bandaid:{name:'💊创可贴',desc:'恢复HP',onUse:()=>{
+    const bonus = (S._skillEffects && S._skillEffects.bandageBonus) ? S._skillEffects.bandageBonus : 0;
+    const heal = 10 + bonus;
+    S.playerHp = Math.min(S.maxHp, S.playerHp + heal);
+    addLog(`💊 使用创可贴！HP+${heal}`,'heal');
+}},
     broadcaster:{name:'📻广播站',desc:'传播直接+40%',onUse:()=>{S.spread=Math.min(100,S.spread+40);addLog('📻 使用广播站！传播直接+40%','card')}},
     legalShieldItem:{name:'🛡️法律盾',desc:'免疫2次攻击',onUse:()=>{S.legalShields+=2;addLog('🛡️ 激活法律护盾，免疫2次攻击','heal')}}
 };
@@ -985,11 +1090,25 @@ const locations={
     classroom:{name:'教室',icon:'🏫',events:[
         {id:'expose',name:'📢 揭露恶行',ap:3,desc:'向全班揭露滚木的所作所为',flavor:'同学们议论纷纷...',eff:{spread:15,angry:1,aff:-10,log:'揭露恶行！传播+15%，愤怒+1'},found:35},
         {id:'resist',name:'⚔️ 开始反抗',ap:2,desc:'正面反抗滚木',flavor:'这是一场持久的斗争...',eff:{atkProg:25,log:'反抗进度+25%'},isAtk:true,found:30,cond:()=>!S.isAttacking},
-        {id:'study',name:'📝 认真听课',ap:1,desc:'专心听讲，降低存在感',flavor:'滚木没注意到你...',eff:{log:'认真听课，被发现概率降低'},found:10,onUse:()=>{S.buffs.studyBuff=2;if(Math.random()<0.2 && S.items.length < S.maxItems){S.items.push('bandaid');addLog('📝 认真听课中发现了创可贴！','heal');}tryTriggerSideQuest('zqt');}},
+        {id:'study',name:'📝 认真听课',ap:1,desc:'专心听讲，降低存在感',flavor:'滚木没注意到你...',eff:{log:'认真听课，被发现概率降低'},found:10,onUse:()=>{
+            S.buffs.studyBuff=2;
+            if(Math.random()<0.2 && S.items.length < S.maxItems){
+                S.items.push('bandaid');addLog('📝 认真听课中发现了创可贴！','heal');
+            }
+            if(Math.random()<0.15) {
+                S.cluesFound++;
+                addLog(`🔍 你在课本里发现了一张神秘的密码碎片... (进度: ${S.cluesFound}/7)`);
+            }
+            tryTriggerSideQuest('zqt');
+        }},
         {id:'rally',name:'🤝 拉拢同学',ap:3,desc:'联合更多同学对抗滚木',flavor:'越来越多人站在你这边！',eff:{spread:10,angry:2,log:'拉拢同学！传播+10%，愤怒+2'},found:25,onUse:()=>{tryTriggerSideQuest('lsy');}}
     ]},
     hallway:{name:'走廊',icon:'🚪',events:[
-        {id:'nailong',name:'😂 奶龙大笑',ap:2,desc:'模仿奶龙捧腹大笑',flavor:'笑声回荡，滚木被震住了...',eff:{nailong:2,targeted:false,log:'奶龙笑声！2回合安全'},cond:()=>S.targeted,found:5},
+        {id:'nailong',name:'😂 奶龙大笑',ap:2,desc:'模仿奶龙捧腹大笑',flavor:'笑声回荡，滚木被震住了...',eff:{nailong:2,targeted:false,log:'奶龙笑声！滚木错愕禁疗2天'},cond:()=>true,found:5,onUse:()=>{
+            S.mockeryMark = false;
+            S.healStun = 2;
+            addLog('😂 奶龙大笑破除了滚木的讥笑效果，并使其错愕禁疗 2 天！', 'heal');
+        }},
         {id:'spread2',name:'📢 向其他班传播',ap:2,desc:'在走廊传播滚木的恶行',flavor:'消息在年级里传开！',eff:{spread:10,log:'传播+10%'},found:30,onUse:()=>{tryTriggerSideQuest('sy');}},
         {id:'observe',name:'🔍 暗中观察',ap:1,desc:'观察滚木的行动规律',flavor:'你发现了滚木的弱点...',eff:{log:'暗中观察，下回合成功率+20%'},found:5,onUse:()=>{S.buffs.observeBuff=true;S.moodKnown=true;addLog('👁️ 已提前知晓今日滚木情绪！');}},
         {id:'photo',name:'📱 偷拍证据',ap:2,desc:'偷偷拍下滚木的恶行',flavor:'证据在手！',eff:{spread:15,log:'偷拍证据！传播+15%'},found:40,onUse:()=>{tryTriggerSideQuest('sy');}}
@@ -1001,7 +1120,17 @@ const locations={
     ]},
     office:{name:'教务处',icon:'📋',events:[
         {id:'report',name:'📋 报告德育处',ap:3,desc:'正式报告滚木的所有恶行',flavor:'德育处老师震怒！',eff:{bossDmg:150,aff:-40,log:'🔥 报告德育处！发生战斗！'},found:10,onUse:()=>{S.reportCount++;S.bossLearning.report = (S.bossLearning.report||0) + 1;if(S.mainQuestStage===2&&S.reportCount>=2)advanceMainQuest();}},
-        {id:'evidence',name:'📸 收集证据',ap:2,desc:'积累证据链',flavor:'证据确凿！',eff:{spread:10,log:'收集证据！传播+10%，证据值+25'},found:20,onUse:()=>{S.evidenceValue = Math.min(100, S.evidenceValue + 25); if(S.evidenceValue>=100) addLog('📂 证据链满额！可发动证据突袭！','card');}},
+        {id:'evidence',name:'📸 收集证据',ap:2,desc:'积累证据链',flavor:'小心翼翼地搜寻...',eff:{spread:5,log:'尝试收集证据...'},found:20,onUse:()=>{
+            if(Math.random() < 0.35) {
+                let gain = Math.floor(Math.random() * 5) + 5;
+                let skillBonus = S._skillEffects.evidenceBonus ? Math.floor(gain * S._skillEffects.evidenceBonus) : 0;
+                S.evidenceValue = Math.min(100, S.evidenceValue + gain + skillBonus);
+                addLog(`📸 收集到蛛丝马迹！证据+${gain + skillBonus}`, 'card');
+            } else {
+                addLog('📸 一无所获，滚木非常狡猾。', 'warn');
+            }
+            if(S.evidenceValue>=100) addLog('📂 证据链满额！可发动教务处签单！','card');
+        }},
         {id:'callParent',name:'📞 打电话给家长',ap:3,desc:'叫家长来学校',flavor:'家长来了，滚木立刻老实了',eff:{targeted:false,log:'家长保护！2回合安全'},found:5,cond:() => S.parentCallCooldown <= 0,onUse:()=>{S.buffs.parentProtect=2;S.parentCallCooldown = 7;addLog('📞 家长已介入，但短期内无法再次施压','warn');}},
         {id:'writeLetter',name:'📝 写举报信',ap:2,desc:'写一封详细的举报信',flavor:'这封信将送到校长办公室',eff:{spread:10,angry:1,log:'写举报信！传播+10%，愤怒+1'},found:15}
     ]},
@@ -1019,7 +1148,6 @@ function checkItemDrop(){
     if(S.location==='rooftop'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('amulet')){S.items.push('amulet');addLog('🛡️ 获得护身符！','card');}
     if(S.location==='classroom'&&Math.random()<0.1&&S.items.length<S.maxItems&&!S.items.includes('handbook')){S.items.push('handbook');addLog('📘 获得校规手册！','card');}
     if(S.location==='hallway'&&Math.random()<0.12&&S.items.length<S.maxItems&&!S.items.includes('speaker')){S.items.push('speaker');addLog('🎤 获得扩音器！','card');}
-    // 创可贴掉落增加
     if(S.affection>=50 && Math.random()<0.3 && S.items.length<S.maxItems && !S.items.includes('bandaid')){
         S.items.push('bandaid');addLog('💊 好感度较高，获得了创可贴！','heal');
     } else if(S.affection>=30 && Math.random()<0.15 && S.items.length<S.maxItems && !S.items.includes('bandaid')){
@@ -1064,6 +1192,12 @@ function bossCounter(){
     if(S.legalShields > 0){ S.legalShields--; addLog('🛡️ 法律护盾抵消了攻击！','heal'); grantExp(10); return; }
     if(S.buffs.amulet){S.buffs.amulet=false;addLog('🛡️ 护身符抵消了攻击！','heal'); grantExp(10); return;}
     if(S.buffs.dududuShield){S.buffs.dududuShield=false;addLog('🎵 dududu护盾抵消了攻击！','heal'); grantExp(10); return;}
+    
+    if(Math.random() < 0.25 && !S.mockeryMark) {
+        S.mockeryMark = true;
+        addLog('🦇 滚木盯上了你，发出了诡异的讥笑！你被施加了讥笑状态。', 'warn');
+    }
+
     const atk=getBossAtk();let dmg=Math.floor(Math.random()*(atk.max-atk.min+1))+atk.min;
     if(S.bossHp<200)dmg=Math.floor(dmg*1.6);if(S.day===9)dmg*=2;const weekEff=getWeekEffect(S.day);
     if(weekEff[1]<0)dmg=Math.floor(dmg*0.8);if(S.dzzHpHalved)dmg=Math.floor(dmg*1.5);if(S.spread>90)dmg=Math.floor(dmg*0.8);
@@ -1104,25 +1238,35 @@ function updateUI(){
   document.getElementById('spreadText').textContent=`${S.spread}%`;document.getElementById('spreadBar').style.width=S.spread+'%';S.maxSpread=Math.max(S.maxSpread,S.spread);
   document.getElementById('pressureText').textContent=`${S.pressure}/${S.maxPressure}`;document.getElementById('pressureBar').style.width=(S.pressure/S.maxPressure*100)+'%';S.maxPressureReached = Math.max(S.maxPressureReached||0, S.pressure);
   document.getElementById('evidenceText').textContent=`${S.evidenceValue}/100`;document.getElementById('evidenceBar').style.width=S.evidenceValue+'%';
+  
   let moodEmoji = S.bossMood === 'happy' ? '😊' : S.bossMood === 'angry' ? '😠' : '😐';
   let moodText = S.bossMood === 'happy' ? '开心(攻-30%)' : S.bossMood === 'angry' ? '暴躁(攻+30%)' : '平常';
   document.getElementById('tagMood').textContent = S.moodKnown ? `${moodEmoji} ${moodText}` : '❓ 未知情绪';
   document.getElementById('resilienceVal').textContent = S.bossResilience;
   if(document.getElementById('bossLayerVal')) document.getElementById('bossLayerVal').textContent = S.bossLayers || 0;
+  
   const atk=getBossAtk();document.getElementById('attackDisplay').innerHTML=`👹 滚木：<strong>${atk.name}</strong>（${atk.min}-${atk.max}）`;
   const hh=document.getElementById('healHint');if(S.affection>=30){hh.innerHTML='💚 <strong style="color:#55ff88;">回血条件满足！</strong>每天恢复5HP';hh.style.borderColor='#225544';}else{hh.innerHTML=`💚 好感度需≥30（当前${S.affection}）才能回血`;hh.style.borderColor='#552222';}
+  
   document.getElementById('tagStreak').textContent=`🔥 连击x${S.streak}`;document.getElementById('tagStreak').className='status-tag'+(S.streak>=2?' active':'');
   document.getElementById('tagWeather').textContent=`${S.weather==='雨天'?'🌧️':S.weather==='阴天'?'☁️':'☀️'} ${S.weather}`;
+  
   const buffs=[];
   if(S.buffs.studyBuff>0)buffs.push('📝低调');if(S.buffs.observeBuff>0)buffs.push('🔍观察');if(S.buffs.thinkBuff)buffs.push('🤔策略');if(S.buffs.musicFree)buffs.push('🎶免AP');if(S.buffs.dududuShield)buffs.push('🛡️护盾');if(S.buffs.parentProtect>0)buffs.push('👨‍👩‍👧保护');
   if(S.buffs.bossConfused)buffs.push('🌀混乱');
+  if(S.mockeryMark)buffs.push('🦇被讥笑');
   if(S.buffs.bodyPassive)buffs.push('💪顽强');if(S.buffs.intPassive)buffs.push('🧠洞察');if(S.buffs.coolPassive)buffs.push('📢传说');
+  
   document.getElementById('tagBuff').textContent=buffs.length>0?buffs.join(' '):'-';document.getElementById('tagBuff').className='status-tag'+(buffs.length>0?' active':'');
   const rel=S.spread>90?'拥护':S.spread>60?'信任':S.spread>30?'友好':'陌生';document.getElementById('tagRelation').textContent=`👥 ${rel}`;
   const phaseLabel = S.bossHp > 1000 ? '阶段1' : S.bossHp > 500 ? '阶段2' : '阶段3';document.getElementById('tagBossPhase').textContent = `👹${phaseLabel}`;
   ['zsy','cqy','xqs','dzz'].forEach(k=>{document.getElementById('un'+k.charAt(0).toUpperCase()+k.slice(1)).className='unlock-node'+(S.cards[k]?' activated':'');});
+  
   const adminBtn = document.getElementById('adminResetBtn');
   if(adminBtn) adminBtn.style.display = isAdminUnlocked() ? 'inline-block' : 'none';
+  
+  document.getElementById('codeActionDiv').style.display = S.chargingHeal ? 'block' : 'none';
+
   checkTitles();renderCards();renderItems();renderActions();checkGameOver();syncSkillUI();
 }
 function checkTitles(){if(S.affection<-50&&!S.titles.includes('背刺王')&&!S.titles.includes('小男娘')){S.titles.push(Math.random()<0.5?'背刺王':'小男娘');addLog(`🏷️ 滚木给你起称号：【${S.titles[S.titles.length-1]}】`,'warn');}}
@@ -1150,21 +1294,22 @@ function renderActions(){
         b.innerHTML=`⚔️ 继续反抗 <span class="ap-tag">AP${cost}</span>`;
         b.onclick=()=>continueAttack();grid.appendChild(b);
     }
-    if(S.evidenceValue >= 100){
+    
+    if(S.evidenceValue >= 100 || S.hasAdminPen){
         const eb = document.createElement('button');
         eb.className = 'action-btn attack-btn';
         eb.style.borderColor = '#ffffff';
-        eb.innerHTML = '📂 证据爆发突袭 <span class="ap-tag">AP0</span>';
+        eb.innerHTML = `📂 教务处签单 (一键秒杀) <span class="ap-tag">AP0</span>`;
         eb.onclick = () => {
-            S.evidenceValue -= 100;
-            let d = 200;
-            S.bossResilience = Math.max(0, S.bossResilience - 2);
-            let actual = applyDamageToBoss(d);
-            addLog(`📂 发动证据突袭！造成${actual}伤害，坚韧-2！`, 'card');
+            S.evidenceValue = 0;
+            S.bossHp = 0;
+            addLog(`📂 提交关键证据/使用签单笔！滚木直接被强制退学！`, 'card');
             updateUI();
+            checkGameOver();
         };
         grid.appendChild(eb);
     }
+    
     const loc=locations[S.location];
     loc.events.forEach((ev,i)=>{
         if(ev.cond&&!ev.cond())return;
@@ -1188,6 +1333,21 @@ function renderActions(){
         b.onclick=()=>moveTo(lk, cost);
         grid.appendChild(b);
     });
+}
+
+function submitCode() {
+    const code = document.getElementById('codeInput').value.trim().toUpperCase();
+    if (code === 'YDHFMAP') {
+        S.chargingHeal = false;
+        S.healStun = 1;
+        applyDamageToBoss(200);
+        addLog('🔊 严重幻听引发反噬！滚木口齿伶俐地胡言乱语，自残 200 HP，且回血被打断！', 'heal');
+        document.getElementById('codeActionDiv').style.display = 'none';
+        document.getElementById('codeInput').value = '';
+        updateUI();
+    } else {
+        addLog('❌ 毫无反应，这似乎不是让他幻听的指令...', 'warn');
+    }
 }
 
 function getResilienceFactor() {
@@ -1252,6 +1412,26 @@ function executeEvent(ev, cost){
   checkMainQuest();updateBlockedLocations();advanceTime();updateUI();
 }
 
+function checkEnrageEvent() {
+    if (S.affection < 0 && S.angryPeople >= 5 && S.course === '数学课' && !S.enrageTriggered) {
+        S.enrageTriggered = true;
+        document.getElementById('enrageOverlay').style.display = 'flex';
+    }
+}
+
+function handleEnrage(choice) {
+    document.getElementById('enrageOverlay').style.display = 'none';
+    if (choice === 1) {
+        S.playerHp = 0;
+        addLog('💀 你试图正面制止狂暴的滚木，被当场无差别制裁！', 'warn');
+        checkGameOver();
+    } else {
+        S.bossHp = 0;
+        addLog('📜 你选择冷眼旁观。滚木的狂暴行为引来了拥有签单能力的人群，利用规则将其彻底消灭！', 'heal');
+        checkGameOver();
+    }
+}
+
 function tryTriggerSideQuest(id) {
     if(!S.sideQuestFlags[id]) {
         S.sideQuestFlags[id] = true;
@@ -1265,9 +1445,12 @@ function useZSY(){
     let cost = S.location==='rooftop' ? 3 : 2;
     if(S.ap<cost||S.gameOver||!S.cards.zsy)return;
     S.ap-=cost;
-    let failChance = 0.5;
-    if(S.bossMood === 'angry') failChance -= 0.2;
-    if(Math.random()<failChance){
+    
+    let baseFail = 0.5;
+    if(S.customAccount === 'zsy') baseFail = 0.8;
+    if(S.bossMood === 'angry') baseFail -= 0.2;
+    
+    if(Math.random() < baseFail){
         document.getElementById('storyText').textContent='你正准备大吼召唤校长...';
         document.getElementById('storyFlavor').textContent=cardDefs.zsy.failFlavor;
         addLog(cardDefs.zsy.failLog,'warn');streakCheck(false);
@@ -1301,6 +1484,14 @@ function trackHateSystem(key) {
 
 function useCard(key){
     if(!S.cards[key]||S.gameOver)return;
+    
+    if (key === 'cqy' && S.customAccount === 'cqy') {
+        if (Math.random() < 0.8) {
+            addLog('💔 CQY分心去偷卷子了！使用卡片失败。', 'warn');
+            return;
+        }
+    }
+    
     trackHateSystem(key);
     if(key === 'dzz') S.dzzUses++;
     const d=cardDefs[key];
@@ -1396,19 +1587,31 @@ function moveTo(lk, cost){
     musicComboCheck();checkHpThresholds();checkItemDrop();advanceTime();updateUI();
 }
 
-function advanceTime(){if(S.weatherDay>0){S.weatherDay--;if(S.weatherDay<=0)S.weather='晴天'}const used=S.maxAp-S.ap;const nt=Math.min(2,Math.floor(used/2));if(nt>S.timeIndex){S.timeIndex=nt;addLog(`⏰ ${S.timeNames[S.timeIndex]}`)}if(S.timeIndex>=2&&!S.gameOver)setTimeout(()=>{if(!S.gameOver&&S.timeIndex>=2)endDay()},400);}
+function advanceTime(){
+    if(S.weatherDay>0){S.weatherDay--;if(S.weatherDay<=0)S.weather='晴天'}
+    const used=S.maxAp-S.ap;const nt=Math.min(2,Math.floor(used/2));
+    if(nt>S.timeIndex){S.timeIndex=nt;addLog(`⏰ ${S.timeNames[S.timeIndex]}`)}
+    
+    checkEnrageEvent();
+    
+    if(S.timeIndex>=2&&!S.gameOver)setTimeout(()=>{if(!S.gameOver&&S.timeIndex>=2)endDay()},400);
+}
 function updateBlockedLocations(){S.blockedLocations = [];if(S.day > 20 && S.npcStance.teacher === 'hostile') S.blockedLocations.push('office');if(S.day > 35 && S.bossHp < 500) S.blockedLocations.push('classroom');if(S.day > 50) S.blockedLocations.push('rooftop');}
 
 function endDay(){
   if(S.gameOver)return;addLog(`🌙 ${getDateString(S.day)}结束`);
-  // 回血逻辑保持不变（每天固定5HP）
+  
   if(S.affection>=30){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 恢复5HP','heal');}else addLog('⚠️ 好感度不足，无法回血','warn');
   if(S.affection>=30){S._healStreak=(S._healStreak||0)+1;if(S._healStreak>=3){S.playerHp=Math.min(S.maxHp,S.playerHp+5);addLog('💚 连续3天好感≥30！额外+5HP','heal');S._healStreak=0}}else S._healStreak=0;
   S.spread=Math.max(0,S.spread-5);
   if(S.buffs.coolPassive){ S.spread=Math.min(100,S.spread+3); addLog('📢 传说之力发散：自动传播+3%','card'); }
   
-  // 夜间恢复与清洗（保持原有）
-  if (S.bossHp > 0) {
+  S.evidenceValue = Math.max(0, S.evidenceValue - 2);
+  
+  if (S.healStun > 0) {
+      S.healStun--;
+      addLog('⚠️ 滚木仍处于错愕/幻听禁疗状态，今晚无法回血！', 'heal');
+  } else if (S.bossHp > 0) {
       if (S.invincibleMode) {
           addLog('⭐ 无敌模式：滚木无法回血','heal');
       } else {
@@ -1418,19 +1621,28 @@ function endDay(){
               bh += Math.floor(Math.random()*21)+20;
               addLog('💢滚木暴怒，额外大幅回血','warn');
           }
+          if (S.mockeryMark) {
+              bh += 150;
+              addLog('🦇 滚木通过讥笑吸取了你的负面情绪！额外大幅恢复！', 'warn');
+          }
           S.bossHp = Math.min(S.bossMaxHp, S.bossHp + bh);
           addLog(`🌙 夜幕降临，滚木销毁不利证据，恢复了 ${bh} HP，层数清零！`, 'warn');
       }
       S.bossLayers = 0;
   }
+  
   S.bossRegenBoost = false;
+
+  if (S.bossHp > 0 && Math.random() < 0.15 && !S.chargingHeal) {
+      S.chargingHeal = true;
+      addLog('⚠️ 滚木正在暗中蓄力，准备大幅回血！快找出打断他的幻听指令！', 'warn');
+  }
 
   if (S.day % 10 === 0 && S.day > 0) {
       S.bossResilience++;
       addLog('🛡️滚木变得更加坚韧！防御增强','warn');
   }
   
-  // 情绪波动机制（保持原有）
   const rMood = Math.random();
   if(rMood < 0.33) S.bossMood = 'happy';
   else if(rMood < 0.66) S.bossMood = 'angry';
@@ -1438,7 +1650,6 @@ function endDay(){
   S.moodKnown = S.buffs.intPassive; 
   if(S.moodKnown) addLog('🧠 洞察力启动：已预知明日滚木心情！','heal');
 
-  // 新增：好感度回血优化（在原有5HP基础上额外概率获得创可贴）
   if(S.affection >= 30 && Math.random() < 0.3 && S.items.length < S.maxItems && !S.items.includes('bandaid')) {
       S.items.push('bandaid');
       addLog('💊 滚木心情不错，你捡到了一个创可贴！','heal');
@@ -1458,12 +1669,16 @@ function endDay(){
   if (S.parentCallCooldown > 0) S.parentCallCooldown--;
   S.day++;S.ap=S.maxAp;S.timeIndex=0;S.course=courses[S.day%7]?courses[S.day%7][0]:'无课';S.courseEffect=courses[S.day%7]?courses[S.day%7][1]:'';S.weather=getWeather(S.day);
   updateBossMaxHp();
+  
+  checkEnrageEvent();
+  
   document.getElementById('storyText').textContent=`${getDateString(S.day)}。${S.course}（${S.courseEffect}）`;
   document.getElementById('storyFlavor').textContent='';
   if(S.day > MAX_DAYS && !S.gameOver){S.gameOver = true; S.victory = false;showOverlay('⏰ 时间耗尽', `两个月期限已到，你未能揭露滚木的所有恶行。\n滚木继续在学校里逍遥法外...`, 'lose');addLog('⏰ 两个月期限已到，游戏结束');}
   S.dailyTasks.forEach((t,i) => { if(!S.dailyTaskDone[i] && t.check()){ S.dailyTaskDone[i] = true; t.reward(); addLog('📜 每日任务完成！','card'); }});
   S.dailyFoundCount = 0; S.rainLoveCount = 0; refreshDailyTasks(); saveSkillData(); updateUI();
 }
+
 function addLog(msg,type=''){const c=document.getElementById('logContainer');const e=document.createElement('div');e.className='log-entry '+type;e.innerHTML=`<span class="tg">[${getDateString(S.day)}]</span> ${msg}`;c.insertBefore(e,c.firstChild);while(c.children.length>50)c.removeChild(c.lastChild);showToast(msg);}
 function checkGameOver(){if(S.gameOver)return;if(S.bossHp<=0&&!S.endingChosen){S.gameOver=true;S.victory=true;triggerEndingSelection();}else if(S.playerHp<=0){S.gameOver=true;S.victory=false;showOverlay('💀 你被击败...','','lose');addLog('💀 游戏结束');}else if(S.affection>=100){S.gameOver=true;S.victory=false;showOverlay('🎭 歌剧魅影','好感度100%...','lose');}if(S.gameOver&&S.bossHp>0)updateUI();}
 function showOverlay(title,text,type){document.getElementById('overlayTitle').textContent=title;document.getElementById('overlayText').textContent=text;document.getElementById('overlayBox').className='overlay-box '+type;document.getElementById('overlayStats').innerHTML=S.victory?getStats().join('<br>'):'';const q=document.getElementById('loseQuote');const lb=document.getElementById('leaderboardBox');if(type==='lose'){q.textContent='你完蛋了，放学别走，车棚见，我带兄弟来砍你。';q.style.display='block';if(lb){lb.style.display='none';lb.innerHTML='';}}else{q.style.display='none';if(type==='win'){renderRankings('leaderboardBox', true);}else if(lb){lb.style.display='none';lb.innerHTML='';}}document.getElementById('overlay').style.display='flex';}
@@ -1490,10 +1705,8 @@ function refreshDailyTasks(){
 function checkMainQuest(){if(S.mainQuestStage===1&&S.spread>=30){S.mainQuestStage++;S.ap=S.maxAp;addLog('📜 主线推进：需要报告德育处2次','card')}else if(S.mainQuestStage===3&&S.bossHp<=800){S.mainQuestStage++;S.playerHp=S.maxHp;addLog('📜 主线推进：滚木进入二阶段！','warn')}}
 function advanceMainQuest(){S.mainQuestStage++;addLog('📜 主线达成！全属性提升','card');S.permanentBonuses.dmgBonus+=10;S.permanentBonuses.maxHpBonus+=20;S.maxHp+=20;}
 
-// 支线任务奖励创可贴
 function triggerSy(){S.sideQuestFlags.sy=true;S.permanentBonuses.spreadBonus+=20;S.permanentBonuses.dmgBonus+=10;addLog('🚨sy带你加入信息帮！');S.targeted=true;bossCounter();}
 function triggerLsy(){S.sideQuestFlags.lsy=true;S.maxHp+=30;S.playerHp=Math.min(S.maxHp,S.playerHp+30);S.spread=Math.min(100,S.spread+5);S.attributePoint+=2;S.skillPoint+=2;
-    // 奖励创可贴
     if(S.items.length < S.maxItems) S.items.push('bandaid');
     if(S.items.length < S.maxItems) S.items.push('bandaid');
     addLog('📚学霸团加入！赠送2个创可贴');}
@@ -1503,24 +1716,6 @@ function triggerZqt(){S.sideQuestFlags.zqt=true;S.bossHp=Math.max(0,S.bossHp-200
 function triggerFbq(){S.sideQuestFlags.fbq=true;S.targeted=false;S.nailongBuff=2;
     if(S.items.length < S.maxItems) S.items.push('bandaid');
     addLog('🎤fbq帮你吓退滚木！并给了创可贴');}
-
-function tryTriggerSideQuest(questId) {
-    if (S.sideQuestFlags[questId]) return;
-    S.sideQuestAttempts[questId] = (S.sideQuestAttempts[questId] || 0) + 1;
-    const attempts = S.sideQuestAttempts[questId];
-    const baseChance = 0.35;
-    const isGuaranteed = attempts >= 4;
-    if (Math.random() < baseChance || isGuaranteed) {
-        S.sideQuestAttempts[questId] = 0;
-        if (questId === 'sy') triggerSy();
-        else if (questId === 'lsy') triggerLsy();
-        else if (questId === 'zqt') triggerZqt();
-        else if (questId === 'fbq') triggerFbq();
-        S.sideQuestsTriggered++; // 确保这里递增
-        grantExp(50); // 触发支线任务 +50EXP
-        addLog('📜 触发了支线事件！获得50EXP');
-    }
-}
 
 document.getElementById('openSkillBtn').onclick = openSkillTree;
 document.getElementById('closeSkillBtn').onclick = closeSkillTree;
@@ -1540,7 +1735,6 @@ document.addEventListener('keydown', (e) => {
     if(e.key.toLowerCase()==='z') useZSY();
 });
 
-// 初始化时加载云端排行榜
 async function init() {
     refreshDailyTasks();
     loadSkillData();
