@@ -383,7 +383,7 @@
   <div class="heal-hint" id="healHint">💚 好感度≥30时每天恢复5HP</div>
   <div class="story-panel"><div class="story-text" id="storyText">滚木站在走廊尽头盯着你。今天，你决定反击...</div><div class="story-flavor" id="storyFlavor"></div></div>
   <div class="actions-label">🎯 行动</div>
-  <div id="codeActionDiv" style="display:none; margin-bottom: 8px; background: rgba(100,50,0,0.2); padding: 8px; border-radius: 8px; border: 1px dashed #ff8800;">
+  <div id="codeActionDiv" style="display:block; margin-bottom: 8px; background: rgba(100,50,0,0.2); padding: 8px; border-radius: 8px; border: 1px dashed #ff8800;">
       <span style="font-size:0.75em; color:#ffaa00; margin-bottom:6px; display:block;">⚠️ 滚木正在蓄力准备夜间回血，尝试输入线索指令让他幻听打断：</span>
       <input type="text" id="codeInput" class="nickname-input" style="width:160px; padding:6px 10px; font-size:0.8em; margin-right:6px; background: rgba(0,0,0,0.5);" placeholder="神秘指令...">
       <button class="action-btn" style="padding:6px 12px; display:inline-block;" onclick="submitCode()">执行干扰</button>
@@ -530,7 +530,7 @@ function escapeHtml(str){
 }
 
 const ADMIN_NICKNAME = 'xqs';
-const ADMIN_PASSWORD = 'xqsLhyl';
+const ADMIN_PASSWORD = '1006';
 
 function isAdminUnlocked(){
     return S.isAdmin || sessionStorage.getItem('rollwood_admin_verified') === '1';
@@ -866,7 +866,8 @@ const S = {
   healStun: 0,
   chargingHeal: false,
   cluesFound: 0,
-  enrageTriggered: false
+  enrageTriggered: false,
+  noRegen: false
 };
 
 const MAX_DAYS = 61;
@@ -917,6 +918,7 @@ const skillTreeData = {
   relic: { name:'✨ Relic', desc:'觉醒、改写、终局力量。', color:'#d58bff', perks: [
     {id:'r1',name:'觉醒',tier:1,req:1,max:4,desc:['HP<90解锁','HP<70强化','HP<50再强化','HP<30最高强化'],gold:false},
     {id:'r2',name:'共鸣',tier:2,req:4,max:3,desc:['变身卡伤害+10%','变身卡伤害+20%','变身卡伤害+35%'],gold:false},
+    {id:'r5',name:'每日静思',tier:3,req:8,max:1,desc:['每日结束自动回复15HP'],gold:false},
     {id:'r3',name:'规则改写',tier:4,req:12,max:1,desc:['(需触发3次支线任务) 每局可改写1条规则'],gold:true},
     {id:'r4',name:'终极觉醒',tier:5,req:15,max:1,desc:['每局一次，任意行动无视AP'],gold:true}
   ]}
@@ -1265,7 +1267,7 @@ function updateUI(){
   const adminBtn = document.getElementById('adminResetBtn');
   if(adminBtn) adminBtn.style.display = isAdminUnlocked() ? 'inline-block' : 'none';
   
-  document.getElementById('codeActionDiv').style.display = S.chargingHeal ? 'block' : 'none';
+  document.getElementById('codeActionDiv').style.display = 'block'; // 始终显示
 
   checkTitles();renderCards();renderItems();renderActions();checkGameOver();syncSkillUI();
 }
@@ -1342,7 +1344,7 @@ function submitCode() {
         S.healStun = 1;
         applyDamageToBoss(200);
         addLog('🔊 严重幻听引发反噬！滚木口齿伶俐地胡言乱语，自残 200 HP，且回血被打断！', 'heal');
-        document.getElementById('codeActionDiv').style.display = 'none';
+        // document.getElementById('codeActionDiv').style.display = 'none'; // 移除此行，使其始终显示
         document.getElementById('codeInput').value = '';
         updateUI();
     } else {
@@ -1426,8 +1428,10 @@ function handleEnrage(choice) {
         addLog('💀 你试图正面制止狂暴的滚木，被当场无差别制裁！', 'warn');
         checkGameOver();
     } else {
-        S.bossHp = 0;
-        addLog('📜 你选择冷眼旁观。滚木的狂暴行为引来了拥有签单能力的人群，利用规则将其彻底消灭！', 'heal');
+        // 数学课事件平衡调整：保留高价值反制，但不再直接秒杀
+        // 一局仅能触发一次（由 enrageTriggered 控制）
+        const actual = applyDamageToBoss(500);
+        addLog(`📜 你选择冷眼旁观。滚木的狂暴行为引来了管理层介入，规则反制造成${actual}点伤害。`, 'heal');
         checkGameOver();
     }
 }
@@ -1485,13 +1489,25 @@ function trackHateSystem(key) {
 function useCard(key){
     if(!S.cards[key]||S.gameOver)return;
     
+    // CQY账号修复：变身卡恢复正常消耗机制
+    // 修复前：CQY使用变身卡不消耗AP，也不正常推进时间，造成无限低风险输出。
+    // 修复后：每次使用变身卡消耗2点AP。
+    const cardApCost = 2;
+    if (S.ap < cardApCost) {
+        addLog('⚠️ AP不足，无法使用变身卡！', 'warn');
+        return;
+    }
+    S.ap -= cardApCost;
+
     if (key === 'cqy' && S.customAccount === 'cqy') {
         if (Math.random() < 0.8) {
-            addLog('💔 CQY分心去偷卷子了！使用卡片失败。', 'warn');
+            addLog('💔 CQY分心导致本次变身卡效果失败。', 'warn');
+            advanceTime();
+            updateUI();
             return;
         }
     }
-    
+
     trackHateSystem(key);
     if(key === 'dzz') S.dzzUses++;
     const d=cardDefs[key];
@@ -1607,26 +1623,35 @@ function endDay(){
   if(S.buffs.coolPassive){ S.spread=Math.min(100,S.spread+3); addLog('📢 传说之力发散：自动传播+3%','card'); }
   
   S.evidenceValue = Math.max(0, S.evidenceValue - 2);
+
+  if (skillLevel('r5') > 0) {
+      S.playerHp = Math.min(S.maxHp, S.playerHp + 15);
+      addLog('🧘 每日静思生效：恢复 15 HP', 'heal');
+  }
   
-  if (S.healStun > 0) {
-      S.healStun--;
-      addLog('⚠️ 滚木仍处于错愕/幻听禁疗状态，今晚无法回血！', 'heal');
-  } else if (S.bossHp > 0) {
-      if (S.invincibleMode) {
-          addLog('⭐ 无敌模式：滚木无法回血','heal');
+  if (S.bossHp > 0) {
+      if (S.noRegen) {
+          addLog('⚠️ 滚木已被永久禁疗，今晚无法回血！', 'heal');
+      } else if (S.healStun > 0) {
+          S.healStun--;
+          addLog('⚠️ 滚木仍处于错愕/幻听禁疗状态，今晚无法回血！', 'heal');
       } else {
-          let bh = Math.floor(S.bossMaxHp * 0.12);
-          if(S.bossRegenBoost) { bh *= 2; addLog('⚠️ 滚木受到歌声刺激，夜间恢复量翻倍！', 'warn'); }
-          if (S.bossHp < S.bossMaxHp * 0.3) {
-              bh += Math.floor(Math.random()*21)+20;
-              addLog('💢滚木暴怒，额外大幅回血','warn');
+          if (S.invincibleMode) {
+              addLog('⭐ 无敌模式：滚木无法回血','heal');
+          } else {
+              let bh = Math.floor(S.bossMaxHp * 0.12);
+              if(S.bossRegenBoost) { bh *= 2; addLog('⚠️ 滚木受到歌声刺激，夜间恢复量翻倍！', 'warn'); }
+              if (S.bossHp < S.bossMaxHp * 0.3) {
+                  bh += Math.floor(Math.random()*21)+20;
+                  addLog('💢滚木暴怒，额外大幅回血','warn');
+              }
+              if (S.mockeryMark) {
+                  bh += 150;
+                  addLog('🦇 滚木通过讥笑吸取了你的负面情绪！额外大幅恢复！', 'warn');
+              }
+              S.bossHp = Math.min(S.bossMaxHp, S.bossHp + bh);
+              addLog(`🌙 夜幕降临，滚木销毁不利证据，恢复了 ${bh} HP，层数清零！`, 'warn');
           }
-          if (S.mockeryMark) {
-              bh += 150;
-              addLog('🦇 滚木通过讥笑吸取了你的负面情绪！额外大幅恢复！', 'warn');
-          }
-          S.bossHp = Math.min(S.bossMaxHp, S.bossHp + bh);
-          addLog(`🌙 夜幕降临，滚木销毁不利证据，恢复了 ${bh} HP，层数清零！`, 'warn');
       }
       S.bossLayers = 0;
   }
